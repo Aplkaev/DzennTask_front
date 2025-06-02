@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { authStore } from '@/store/auth/auth';
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+});
 
-export function useAuth() {
-  const [user, setUser] = useState(null);
+api.interceptors.request.use((config) => {
+  const token = authStore.getState().token;
   
-  const login = async (email: string, password: string) => {
-    // API-запрос
-  };
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   
-  const register = async (email: string, password: string) => {
-    // API-запрос
-  };
-
-  return { user, login, register };
-}
+  return config;
+});

@@ -1,38 +1,32 @@
-import { Button, Field, Input, Stack } from "@chakra-ui/react"
-import { PasswordInput } from "@/components/ui/password-input"
-import { useForm } from "react-hook-form"
+import RegForm from "./RegForm"
+import { Box } from "@chakra-ui/react";
+import { authStore } from "@/store/auth/auth";
+import LoginForm from "./LoginForm";
+import { api } from "@/shared/api/apiClient";
 
-interface FormValues {
-  username: string
-  password: string
-}
 
 export default function AuthForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>()
-
-  const onSubmit = handleSubmit((data) => console.log(data))
+  const handleSubmitRegister = async (email: string, password: string) => {
+    const { data } = await api.post('/users/register', {
+      email: email,
+      password: password
+    });
+    console.log('response register',data);
+  };
+    const handleSubmitLogin = async (email: string, password: string) => {
+    const { data } = await api.post('/login', {
+      username: email,
+      password: password
+    });
+    authStore.getState().login(data.token)
+  };
 
   return (
-    <form onSubmit={onSubmit}>
-      <Stack gap="4" align="flex-start" maxW="sm">
-        <Field.Root invalid={!!errors.username}>
-          <Field.Label>Username</Field.Label>
-          <Input {...register("username")} />
-          <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
-        </Field.Root>
-
-        <Field.Root invalid={!!errors.password}>
-          <Field.Label>Password</Field.Label>
-          <PasswordInput {...register("password")} appearance="light"/>
-          <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
-        </Field.Root>
-
-        <Button type="submit">Submit</Button>
-      </Stack>
-    </form>
+    <Box p={4} appearance="light">
+      {authStore.getState().token}
+      
+      <LoginForm onSuccess={(email, password) => handleSubmitLogin(email, password)}></LoginForm>
+      <RegForm onSuccess={(email, password) => handleSubmitRegister(email, password)}></RegForm>
+    </Box>
   )
 }
