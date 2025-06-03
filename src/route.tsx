@@ -2,6 +2,7 @@ import { authStore } from '@/store/auth/auth';
 import LoginForm from './containers/auth/LoginForm';
 import RegForm from './containers/auth/RegForm';
 import HomePage from './components/HomePages';
+import NewProject from './components/Project/NewProject';
 
 export type AppRoute = {
   path: string;
@@ -17,6 +18,11 @@ export const route: AppRoute[] =
     label: 'Главная',
     element: <HomePage />,
     children: [
+      {
+        path: '/project/new',
+        label: 'Новый проект',
+        element: <NewProject />,
+      }
     ],
 },
 {
