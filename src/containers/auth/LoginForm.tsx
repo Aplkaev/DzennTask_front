@@ -3,8 +3,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { useForm } from "react-hook-form"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
-import { authStore } from "@/store/auth/auth"
-import ProtectedRoute from "./ProtectedRoute"
+import { login } from "@/store/auth/useAuthStore"
 
 interface FormValues {
   username: string
@@ -21,24 +20,27 @@ export default function LoginForm() {
   } = useForm<FormValues>()
 
   const onSubmit = handleSubmit(async (data) => {
-    try { 
-      authStore.getState().logining(data.username, data.password);
+    // try { 
+      await login({
+        email: data.username,
+        password: data.password
+      })
       toaster.create({
         title: "Авторизация успешна",
         type: "success",
         duration: 5000
       })
       navigate("/");
-    } catch(error) { 
-      console.log(error);
+    // } catch(error) { 
+    //   console.log(error);
       
-      toaster.create({
-        description: error instanceof Error ? error.message : "Неизвестная ошибка",
-        title: "Ошибка авторизации",
-        type: "error",
-        duration: 5000
-      })
-    }
+    //   toaster.create({
+    //     description: error instanceof Error ? error.message : "Неизвестная ошибка",
+    //     title: "Ошибка авторизации",
+    //     type: "error",
+    //     duration: 5000
+    //   })
+    // }
   })
 
   return (

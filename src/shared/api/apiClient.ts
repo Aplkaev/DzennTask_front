@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authStore } from '@/store/auth/auth';
+import { useToken, logout, useAuthStore } from '@/store/auth/useAuthStore';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -9,8 +9,9 @@ export const apiClient = axios.create({
   },
 });
 
+
 apiClient.interceptors.request.use((config) => {
-  const token = authStore.getState().token;
+  const token = useAuthStore.getState().token;
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -27,6 +28,9 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
+      // logout();
+      
+      // window.location.href = '/';      
       // try {
       //   const { data } = await axios.post('/auth/refresh', {
       //     refreshToken: authStore.getState().refreshToken

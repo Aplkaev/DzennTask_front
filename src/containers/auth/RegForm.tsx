@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { authStore } from "@/store/auth/auth";
+import { register } from "@/store/auth/useAuthStore";
 
 const registerSchema = z.object({
   email: z.string().email("Некорректный email"),
@@ -38,7 +38,10 @@ export default function RegForm() {
         type: "success",
         duration: 5000
       });
-      authStore.getState().registered(data.email, data.password);
+      await register({
+        email: data.email,
+        password: data.password
+      });
 
       navigate("/login");
     } catch (error) {

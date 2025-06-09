@@ -1,8 +1,8 @@
-import { authStore } from '@/store/auth/auth';
 import LoginForm from './containers/auth/LoginForm';
 import RegForm from './containers/auth/RegForm';
 import HomePage from './components/HomePages';
 import NewProject from './components/Project/NewProject';
+import Logout from './containers/auth/Logout';
 
 export type AppRoute = {
   path: string;
@@ -32,5 +32,10 @@ export const route: AppRoute[] =
 {
   path: 'register',
   element: <RegForm />,
+},
+{
+  path: 'logout',
+  label: 'Выйти',
+  element: <Logout />,
 },
 ];
