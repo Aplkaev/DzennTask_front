@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { Box, Heading, HStack, Input, Button, Stack, Checkbox, Text } from "@chakra-ui/react";
+import { useProject } from "@/store/project/useProjectStore";
+import { useTasks, fetchTasks, createTask } from "@/store/task/useTaskStore";
+import { useUser } from "@/store/auth/useAuthStore";
 
 interface Task {
   id: number;
@@ -8,14 +11,26 @@ interface Task {
 }
 
 export default function Task() {
+  const project = useProject();
+  const user = useUser();
   const [tasks, setTasks] = useState<Task[]>([
     { id: 1, text: "Купить продукты", completed: false },
     { id: 2, text: "Сделать домашку", completed: true },
   ]);
   const [newTask, setNewTask] = useState("");
 
-  const addTask = () => {
+  const addTask = async () => {
     if (newTask.trim()) {
+      
+      await createTask({
+        id: null,
+        status: 'new',
+        title: newTask,
+        priority: 1,
+        project_id: project?.id ?? '',
+        assigned_to_id: user?.user_id ?? ''
+      });
+
       setTasks([...tasks, {
         id: Date.now(),
         text: newTask,
@@ -34,6 +49,13 @@ export default function Task() {
   const deleteTask = (id: number) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
+
+  useEffect(() => {
+    if(project !== null) { 
+      fetchTasks(project.id);
+    }
+  }, [project?.id]);
+
 
   return (
     <Box p={4} appearance="light">
