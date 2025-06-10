@@ -3,28 +3,20 @@ import RegForm from './containers/auth/RegForm';
 import HomePage from './components/HomePages';
 import NewProject from './components/Project/NewProject';
 import Logout from './containers/auth/Logout';
+import Task from './components/Task/Task';
 
 export type AppRoute = {
   path: string;
   label?: string; // для меню
   element: ReactNode;
   children?: AppRoute[];
-  hidden?: boolean; // если не показывать в меню
+  hidden?: boolean; // если не показывать в меню,
+  top?: boolean;
+  bottom?: boolean;
 };
 
 export const route: AppRoute[] = 
-[{
-    path: '/',
-    label: 'Главная',
-    element: <HomePage />,
-    children: [
-      {
-        path: '/project/new',
-        label: 'Новый проект',
-        element: <NewProject />,
-      }
-    ],
-},
+[
 {
   path: 'login',
   element: <LoginForm />,
@@ -37,5 +29,26 @@ export const route: AppRoute[] =
   path: 'logout',
   label: 'Выйти',
   element: <Logout />,
+  bottom: true
 },
+{
+    path: '/',
+    label: 'Главная',
+    hidden: true,
+    element: <HomePage />,
+    top: true,
+    children: [
+      {
+        path: 'project/new',
+        label: 'Новый проект',
+        top: true,
+        element: <NewProject />,
+      },
+      {
+        path: 'project/:uuid',
+        element: <Task />
+      }
+    ],
+},
+
 ];
