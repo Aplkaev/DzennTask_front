@@ -52,3 +52,7 @@ export default tseslint.config({
   },
 })
 ```
+
+## License
+
+Symfony Docker is available under the MIT License.
