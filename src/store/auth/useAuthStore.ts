@@ -11,6 +11,7 @@ interface IAction {
   login: (user: IUserLogin)=>void;
   logout: () => void;
   register: (user: IUserLogin) => void;
+  getMe: () => void;
 }
 interface IUser { 
   user_id: string;
@@ -35,21 +36,29 @@ const initialState: IAuth = {
 
 interface IAuthState extends IAction, IAuth {}
 
-const authStore: StateCreator<IAuthState,[["zustand/devtools", never], ["zustand/persist", unknown]]> = (set) => ({
+const authStore: StateCreator<IAuthState,[["zustand/devtools", never], ["zustand/persist", unknown]]> = (set, get) => ({
   ...initialState,
+  getMe: async () => { 
+      const { data } = await api.get('/users/me');
+      set({user: {
+        user_id: data.id,
+        email: data.email,
+        avatar_url: data.avatar_url
+      }})
+  },
   login: async (user: IUserLogin) => {
     // try { 
-      const response = await api.post('/login', {
+      const { data } = await api.post('/login', {
         username: user.email,
         password: user.password,
       });
-      console.log('login store', response);
       
-
-      const { token } = response.data;
+      const { token } = data;
       
       set({token: token, isAuthenticated: true}, false, 'auth_store_login');
-    
+      
+      get().getMe();
+      
     // } catch (error) { 
 
       // console.log(error);
@@ -88,6 +97,7 @@ export const useAuthStore = create<IAuthState>()(
   )
 );
 
+export const useUser = () => useAuthStore((state)=>state.user);
 export const useIsAuthenticated = () => useAuthStore((state)=>state.isAuthenticated);
 export const useToken = () => useAuthStore((state)=>state.token);
 export const login = (user: IUserLogin) => useAuthStore.getState().login(user);

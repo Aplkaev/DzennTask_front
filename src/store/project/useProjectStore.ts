@@ -7,7 +7,8 @@ interface IActon {
   fetchProjects: () => void;
   clearProjects: () => void;
   removeProject: (id: string) => void;
-  editProject: (id: string) => void
+  editProject: (id: string) => void;
+  selectedProject: (id: string) => void;
 }
 
 interface IProject {
@@ -18,13 +19,15 @@ interface IProject {
 }
 
 interface IProjectList {
-  projects: IProject[]
+  projects: IProject[];
+  selectProject: IProject | null;
 }
 
 interface IProjectState extends IActon, IProjectList {}
 
 const initialState: IProjectList = {
-  projects: []
+  projects: [],
+  selectProject: null,
 }
 
 const projectStore: StateCreator<IProjectState,[["zustand/devtools", never], ["zustand/persist", unknown]]> = (set, get) => ({
@@ -54,7 +57,14 @@ const projectStore: StateCreator<IProjectState,[["zustand/devtools", never], ["z
     const updatedProjects = currentProjects.filter(project => project.id !== id);
       
     set({ projects: updatedProjects });
-  }
+  },
+  selectedProject: async (id: string) => {
+    const currentProjects = get().projects
+
+    const selectProject = currentProjects.find((project) => project.id === id);
+
+    set({ selectProject: selectProject});
+  },
 });
 
 const useProjectStore = create<IProjectState>()(
@@ -70,6 +80,8 @@ const useProjectStore = create<IProjectState>()(
 );
 
 export const useProjects = () => useProjectStore((state)=>state.projects);
+export const useProject = () => useProjectStore((state)=>state.selectProject);
 export const fetchProjects = () => useProjectStore.getState().fetchProjects();
-export const createProject = (name: string) => useProjectStore.getState().createProject(name)
-export const removeProject = (id: string) => useProjectStore.getState().removeProject(id)
+export const createProject = (name: string) => useProjectStore.getState().createProject(name);
+export const removeProject = (id: string) => useProjectStore.getState().removeProject(id);
+export const seletedProject = (id: string) => useProjectStore.getState().selectedProject(id);
