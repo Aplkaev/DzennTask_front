@@ -36,12 +36,13 @@ const taskStore: StateCreator<ITaskState,[["zustand/devtools", never], ["zustand
     
     const currentTasks = get().tasks
 
-    set({tasks:[...currentTasks, task]})
+    set({tasks:[task, ...currentTasks]})
   },
   fetch: async (id: string) => { 
-    const { data } = await api.get(`/tasks/project/${id}`);
-
-    set({tasks: data || []})
+    const {data} = await api.get(`/tasks/project/${id}`);
+    
+    
+    set({tasks: data.items || []})
   },
   remove: async () => { 
 
