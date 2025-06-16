@@ -1,9 +1,7 @@
 import { Box, VStack, Link } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { route, type AppRoute } from '@/route';
-import { api, apiClient } from '@/shared/api/apiClient';
-import { useEffect, useState } from 'react';
-import { useProjects, fetchProjects, seletedProject, useProject } from '@/store/project/useProjectStore';
+import ProjectSidebar from './Sidebar/ProjectSidebar';
 import './style.css'
 
 
@@ -32,17 +30,12 @@ const Sidebar = () => {
     }
   };
 
-
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
-
-
-
   walk(route);
+
   return (
     <Box w="250px" h="100vh" p={4}>
       <VStack align="stretch" spacing={3}>
+        {/* вынести в отдельный компонент */}
         {topLevelRoutes.map((r) => (
           <div className="menu-route-main">
             <Link as={RouterLink} key={r.path} to={r.path} color={'#FFF'}>
@@ -50,18 +43,8 @@ const Sidebar = () => {
             </Link>
           </div>
         ))}
-        {useProjects().map((project) => (
-            <Link
-              as={RouterLink}
-              to={`/project/${project.id}`}
-              key={project.id}
-              color={'#ccc5be'}
-              className={"menu-route-project " + (useProject()?.id === project.id ? 'menu-active-project' : '')}  
-              onClick={() => seletedProject(project.id)}
-            >
-              {project.name}
-            </Link>
-        ))}
+
+        <ProjectSidebar />
 
         {bottomLevelRoutes.map((r) => (
           <div className="menu-route-main">

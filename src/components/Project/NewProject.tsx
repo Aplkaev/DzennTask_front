@@ -4,8 +4,7 @@ import { Button, Dialog, Field, Input, Portal, Stack } from "@chakra-ui/react"
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toaster, Toaster } from "@/components/ui/toaster"
-import { apiClient } from "@/shared/api/apiClient"
-import { createProject, useProjects } from "@/store/project/useProjectStore"
+import { createProject } from "@/store/project/useProjectStore"
 
 export default function NewProject () {
   const ref = useRef<HTMLInputElement>(null)
