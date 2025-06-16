@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useToken, logout, useAuthStore } from '@/store/auth/useAuthStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -27,23 +27,10 @@ apiClient.interceptors.response.use(
     
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
+      useAuthStore.getState().logout();
       
-      // logout();
-      
-      // window.location.href = '/';      
-      // try {
-      //   const { data } = await axios.post('/auth/refresh', {
-      //     refreshToken: authStore.getState().refreshToken
-      //   });
-        
-      //   authStore.getState().token = data.token
-      //   originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        
-      //   return apiClient(originalRequest);
-      // } catch (refreshError) {
-      //   authStore.getState().logout();
-      //   return Promise.reject(refreshError);
-      // }
+      window.location.href = '/';
     }
     
     return Promise.reject(error);
