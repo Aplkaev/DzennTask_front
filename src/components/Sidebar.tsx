@@ -1,8 +1,8 @@
-import { Box, VStack, Link } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Box, VStack } from '@chakra-ui/react';
 import { route, type AppRoute } from '@/route';
 import ProjectSidebar from './Sidebar/ProjectSidebar';
 import './style.css'
+import MenuSidebar from './Sidebar/MenuSidebar';
 
 
 const Sidebar = () => {
@@ -37,21 +37,13 @@ const Sidebar = () => {
       <VStack align="stretch" spacing={3}>
         {/* вынести в отдельный компонент */}
         {topLevelRoutes.map((r) => (
-          <div className="menu-route-main">
-            <Link as={RouterLink} key={r.path} to={r.path} color={'#FFF'}>
-              {r.label}
-            </Link>
-          </div>
+          <MenuSidebar menu={r}/> 
         ))}
 
         <ProjectSidebar />
 
         {bottomLevelRoutes.map((r) => (
-          <div className="menu-route-main">
-            <Link as={RouterLink} key={r.path} to={r.path} color={'#FFF'}>
-              {r.label}
-            </Link>
-          </div>
+          <MenuSidebar menu={r}/> 
         ))}
       </VStack>
     </Box>
