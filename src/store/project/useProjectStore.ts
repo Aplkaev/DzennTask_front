@@ -73,7 +73,10 @@ const useProjectStore = create<IProjectState>()(
       projectStore,
       {
         name: 'project-store',
-        storage: createJSONStorage(()=>localStorage)
+        storage: createJSONStorage(()=>localStorage),
+        partialize: (state) => ({
+          selectProject: state.selectProject,
+        }),
       }
     )
   )

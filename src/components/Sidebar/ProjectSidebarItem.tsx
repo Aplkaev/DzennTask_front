@@ -1,5 +1,5 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Box, VStack, Link } from '@chakra-ui/react';
+import { Link } from '@chakra-ui/react';
 import { useProject, seletedProject } from '@/store/project/useProjectStore';
 
 const ProjectSidebarItem = ({project}) => {
