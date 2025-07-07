@@ -6,8 +6,12 @@ type Props = {
   children: ReactNode;
 };
 
-const ProtectedRoute = ({ children }: Props) => {  
-  return useIsAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />;
+const ProtectedRoute = ({ children }: Props) => {
+  return useIsAuthenticated() ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };
 
 // дернуть запрос на проверку стух ли token

@@ -9,14 +9,13 @@ export const apiClient = axios.create({
   },
 });
 
-
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
-  
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   return config;
 });
 
@@ -24,15 +23,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       useAuthStore.getState().logout();
-      
+
       window.location.href = '/';
     }
-    
+
     return Promise.reject(error);
   }
 );

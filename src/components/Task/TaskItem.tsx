@@ -7,28 +7,28 @@ import {
   Button,
   Link,
   Collapsible,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 import {
   useRemoveTask,
   useDoneTask,
   useUpdateTask,
-} from "@/store/task/useTaskStore";
-import DetailsTask from "./DetailsTask";
-import { useState } from "react";
+} from '@/store/task/useTaskStore';
+import DetailsTask from './DetailsTask';
+import { useState } from 'react';
 
 const TaskItem = ({ task }) => {
-  const pathDatailsTask = "/project/tasks/" + task.id;
+  const pathDatailsTask = '/project/tasks/' + task.id;
   const [isOpenDetails, setIsOpenDetails] = useState(false);
 
   const updateTask = async (task) => {
     console.log(task);
 
-    if (task.status !== "done") {
-      task.status = "done";
+    if (task.status !== 'done') {
+      task.status = 'done';
       useDoneTask(task.id);
       return;
     }
-    task.status = "new";
+    task.status = 'new';
 
     useUpdateTask(task.id, task);
   };
@@ -41,7 +41,7 @@ const TaskItem = ({ task }) => {
     <Box>
       <HStack key={task.id}>
         <Stack align="flex-start">
-          <Checkbox.Root defaultChecked={task.status === "done"}>
+          <Checkbox.Root defaultChecked={task.status === 'done'}>
             <Checkbox.HiddenInput />-
             <Checkbox.Control onClick={() => updateTask(task)}>
               <Checkbox.Indicator />
@@ -49,7 +49,7 @@ const TaskItem = ({ task }) => {
             <Checkbox.Label>{task.label}</Checkbox.Label>
           </Checkbox.Root>
         </Stack>
-        <Box flex="1" onClick={setDetails} cursor="pointer" width={"100px"}>
+        <Box flex="1" onClick={setDetails} cursor="pointer" width={'100px'}>
           <Text flex={1} truncate>
             {task.title}
           </Text>

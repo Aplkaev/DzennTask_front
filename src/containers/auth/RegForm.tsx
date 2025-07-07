@@ -1,20 +1,22 @@
-import { Button, Field, Input, Stack, Box, Text, Link } from "@chakra-ui/react";
-import { Toaster, toaster } from "@/components/ui/toaster";
-import { PasswordInput } from "@/components/ui/password-input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { register } from "@/store/auth/useAuthStore";
+import { Button, Field, Input, Stack, Box, Text, Link } from '@chakra-ui/react';
+import { Toaster, toaster } from '@/components/ui/toaster';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { register } from '@/store/auth/useAuthStore';
 
-const registerSchema = z.object({
-  email: z.string().email("Некорректный email"),
-  password: z.string().min(6, "Пароль должен быть не менее 6 символов"),
-  passwordConfirm: z.string()
-}).refine((data) => data.password === data.passwordConfirm, {
-  message: "Пароли не совпадают",
-  path: ["passwordConfirm"]
-});
+const registerSchema = z
+  .object({
+    email: z.string().email('Некорректный email'),
+    password: z.string().min(6, 'Пароль должен быть не менее 6 символов'),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: 'Пароли не совпадают',
+    path: ['passwordConfirm'],
+  });
 
 type FormValues = z.infer<typeof registerSchema>;
 
@@ -26,31 +28,31 @@ export default function RegForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(registerSchema)
+    resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = handleSubmit(async (data) => {
     console.log('onSubmit call', data);
     try {
-
       toaster.create({
-        title: "Регистрация успешна",
-        type: "success",
-        duration: 5000
+        title: 'Регистрация успешна',
+        type: 'success',
+        duration: 5000,
       });
       await register({
         email: data.email,
-        password: data.password
+        password: data.password,
       });
 
-      navigate("/login");
+      navigate('/login');
     } catch (error) {
       console.error(error);
       toaster.create({
-        description: error instanceof Error ? error.message : "Неизвестная ошибка",
-        title: "Ошибка регистрации",
-        type: "error",
-        duration: 5000
+        description:
+          error instanceof Error ? error.message : 'Неизвестная ошибка',
+        title: 'Ошибка регистрации',
+        type: 'error',
+        duration: 5000,
       });
     }
   });
@@ -69,7 +71,7 @@ export default function RegForm() {
         <Field.Root invalid={!!errors.email}>
           <Field.Label>Почта</Field.Label>
           <Input
-            {...register("email")}
+            {...register('email')}
             type="email"
             placeholder="example@mail.com"
           />
@@ -79,7 +81,7 @@ export default function RegForm() {
         <Field.Root invalid={!!errors.password}>
           <Field.Label>Пароль</Field.Label>
           <PasswordInput
-            {...register("password")}
+            {...register('password')}
             appearance="light"
             placeholder="Не менее 6 символов"
           />
@@ -89,19 +91,24 @@ export default function RegForm() {
         <Field.Root invalid={!!errors.passwordConfirm}>
           <Field.Label>Подтвердить пароль</Field.Label>
           <PasswordInput
-            {...register("passwordConfirm")}
+            {...register('passwordConfirm')}
             appearance="light"
             placeholder="Повторите пароль"
           />
           <Field.ErrorText>{errors.passwordConfirm?.message}</Field.ErrorText>
         </Field.Root>
 
-        <Button type="submit" isLoading={isSubmitting} w="full" colorScheme="blue">
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          w="full"
+          colorScheme="blue"
+        >
           Зарегистрироваться
         </Button>
 
         <Text fontSize="sm" textAlign="center">
-          Уже есть аккаунт?{" "}
+          Уже есть аккаунт?{' '}
           <Link as={RouterLink} to="/login" color="blue.500">
             Войти
           </Link>

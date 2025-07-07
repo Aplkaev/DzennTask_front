@@ -1,9 +1,8 @@
 import { Box, VStack } from '@chakra-ui/react';
 import { route, type AppRoute } from '@/route';
 import ProjectSidebar from './Sidebar/ProjectSidebar';
-import './style.css'
+import './style.css';
 import MenuSidebar from './Sidebar/MenuSidebar';
-
 
 const Sidebar = () => {
   const topLevelRoutes: AppRoute[] = [];
@@ -15,7 +14,7 @@ const Sidebar = () => {
         walk(route.children);
       }
 
-      if(route.hidden || !route.label) { 
+      if (route.hidden || !route.label) {
         continue;
       }
 
@@ -26,7 +25,6 @@ const Sidebar = () => {
       if (!route.top || route.bottom) {
         bottomLevelRoutes.push(route);
       }
-
     }
   };
 
@@ -37,13 +35,13 @@ const Sidebar = () => {
       <VStack align="stretch" spacing={3}>
         {/* вынести в отдельный компонент */}
         {topLevelRoutes.map((r) => (
-          <MenuSidebar key={r.path} menu={r}/> 
+          <MenuSidebar key={r.path} menu={r} />
         ))}
 
         <ProjectSidebar />
 
         {bottomLevelRoutes.map((r) => (
-          <MenuSidebar key={r.path} menu={r}/> 
+          <MenuSidebar key={r.path} menu={r} />
         ))}
       </VStack>
     </Box>

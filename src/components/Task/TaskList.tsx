@@ -1,4 +1,4 @@
-import { useState, useEffect, use, useRef } from "react";
+import { useState, useEffect, use, useRef } from 'react';
 import {
   Box,
   Heading,
@@ -8,13 +8,13 @@ import {
   Stack,
   Checkbox,
   Text,
-} from "@chakra-ui/react";
-import { useProject } from "@/store/project/useProjectStore";
-import { useTasks, fetchTasks, createTask } from "@/store/task/useTaskStore";
-import { useUser } from "@/store/auth/useAuthStore";
-import CreateTask from "./CreateTask";
-import TaskItem from "./TaskItem";
-import Topbar from "../Topbar/Topbar";
+} from '@chakra-ui/react';
+import { useProject } from '@/store/project/useProjectStore';
+import { useTasks, fetchTasks, createTask } from '@/store/task/useTaskStore';
+import { useUser } from '@/store/auth/useAuthStore';
+import CreateTask from './CreateTask';
+import TaskItem from './TaskItem';
+import Topbar from '../Topbar/Topbar';
 
 interface Task {
   id: number;

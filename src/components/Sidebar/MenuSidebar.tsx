@@ -1,16 +1,16 @@
-import { Box, Link } from "@chakra-ui/react"
+import { Box, Link } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const MenuSidebar = ({menu}) => { 
-    return (
-        <Box>
-            <div className="menu-route-main">
-            <Link as={RouterLink} key={menu.path} to={menu.path} color={'#FFF'}>
-                {menu.label}
-            </Link>
-          </div>
-        </Box>
-    )
-}
+const MenuSidebar = ({ menu }) => {
+  return (
+    <Box>
+      <div className="menu-route-main">
+        <Link as={RouterLink} key={menu.path} to={menu.path} color={'#FFF'}>
+          {menu.label}
+        </Link>
+      </div>
+    </Box>
+  );
+};
 
 export default MenuSidebar;

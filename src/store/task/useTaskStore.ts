@@ -1,13 +1,13 @@
-import { create, type StateCreator } from "zustand";
-import { api } from "@/shared/api/apiClient";
-import { createJSONStorage, persist, devtools } from "zustand/middleware";
+import { create, type StateCreator } from 'zustand';
+import { api } from '@/shared/api/apiClient';
+import { createJSONStorage, persist, devtools } from 'zustand/middleware';
 
 interface IActon {
   create: (task: ITask) => void;
   fetch: (id: string) => void;
   remove: (id: string) => void;
   done: (id: string) => void;
-  update: (id: string, Task:ITask) => void;
+  update: (id: string, Task: ITask) => void;
 }
 
 interface ITask {
@@ -29,13 +29,13 @@ const initialState: ITaskList = {
   tasks: [],
 };
 
-const taskStore: StateCreator<ITaskState, [["zustand/devtools", never]]> = (
+const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
   set,
   get
 ) => ({
   ...initialState,
   create: async (task: ITask) => {
-    await api.post("/tasks", task);
+    await api.post('/tasks', task);
 
     const currentTasks = get().tasks;
 
@@ -49,7 +49,7 @@ const taskStore: StateCreator<ITaskState, [["zustand/devtools", never]]> = (
   done: async (id: string) => {
     api.put(`/tasks/${id}/done`);
   },
-  update: async(id: string, updatedTask: ITask) => { 
+  update: async (id: string, updatedTask: ITask) => {
     api.put(`/tasks/${id}`, updatedTask);
 
     const currentTasks = get().tasks;
@@ -83,4 +83,5 @@ export const fetchTasks = (id: string) => useTaskStore.getState().fetch(id);
 export const useTasks = () => useTaskStore((state) => state.tasks);
 export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
-export const useUpdateTask = (id: string, task: ITask) => useTaskStore.getState().update(id, task);
+export const useUpdateTask = (id: string, task: ITask) =>
+  useTaskStore.getState().update(id, task);

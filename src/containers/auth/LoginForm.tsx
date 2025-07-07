@@ -1,13 +1,13 @@
-import { Button, Field, Input, Stack, Box, Text, Link } from "@chakra-ui/react"
-import { PasswordInput } from "@/components/ui/password-input"
-import { useForm } from "react-hook-form"
-import { Toaster, toaster } from "@/components/ui/toaster"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
-import { login } from "@/store/auth/useAuthStore"
+import { Button, Field, Input, Stack, Box, Text, Link } from '@chakra-ui/react';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useForm } from 'react-hook-form';
+import { Toaster, toaster } from '@/components/ui/toaster';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { login } from '@/store/auth/useAuthStore';
 
 interface FormValues {
-  username: string
-  password: string
+  username: string;
+  password: string;
 }
 
 export default function LoginForm() {
@@ -17,23 +17,23 @@ export default function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>()
+  } = useForm<FormValues>();
 
   const onSubmit = handleSubmit(async (data) => {
-    // try { 
-      await login({
-        email: data.username,
-        password: data.password
-      })
-      toaster.create({
-        title: "Авторизация успешна",
-        type: "success",
-        duration: 5000
-      })
-      navigate("/");
-    // } catch(error) { 
+    // try {
+    await login({
+      email: data.username,
+      password: data.password,
+    });
+    toaster.create({
+      title: 'Авторизация успешна',
+      type: 'success',
+      duration: 5000,
+    });
+    navigate('/');
+    // } catch(error) {
     //   console.log(error);
-      
+
     //   toaster.create({
     //     description: error instanceof Error ? error.message : "Неизвестная ошибка",
     //     title: "Ошибка авторизации",
@@ -41,28 +41,28 @@ export default function LoginForm() {
     //     duration: 5000
     //   })
     // }
-  })
+  });
 
   return (
-    <Box 
-      minH="100vh" 
-      display="flex" 
-      alignItems="center" 
+    <Box
+      minH="100vh"
+      display="flex"
+      alignItems="center"
       justifyContent="center"
-      as="form" 
-      onSubmit={onSubmit} 
+      as="form"
+      onSubmit={onSubmit}
       px={4}
     >
       <Stack spacing={6}>
         <Field.Root invalid={!!errors.username}>
           <Field.Label>Username</Field.Label>
-          <Input {...register("username")} />
+          <Input {...register('username')} />
           <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
         </Field.Root>
 
         <Field.Root invalid={!!errors.password}>
           <Field.Label>Password</Field.Label>
-          <PasswordInput {...register("password")} appearance="light"/>
+          <PasswordInput {...register('password')} appearance="light" />
           <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
         </Field.Root>
 
@@ -71,7 +71,7 @@ export default function LoginForm() {
         </Button>
 
         <Text fontSize="sm" textAlign="center">
-          Нет аккаунта?{" "}
+          Нет аккаунта?{' '}
           <Link as={RouterLink} to="/register" color="blue.500">
             Зарегистрироваться
           </Link>
@@ -79,5 +79,5 @@ export default function LoginForm() {
       </Stack>
       <Toaster />
     </Box>
-  )
+  );
 }

@@ -53,7 +53,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.chakra-button { 
+.chakra-button {
   color: #fff;
 }
 @media (prefers-color-scheme: light) {

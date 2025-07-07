@@ -17,23 +17,22 @@ export type AppRoute = {
   bottom?: boolean;
 };
 
-export const route: AppRoute[] = 
-[
-{
-  path: 'login',
-  element: <LoginForm />,
-},
-{
-  path: 'register',
-  element: <RegForm />,
-},
-{
-  path: 'logout',
-  label: 'Выйти',
-  element: <Logout />,
-  bottom: true
-},
-{
+export const route: AppRoute[] = [
+  {
+    path: 'login',
+    element: <LoginForm />,
+  },
+  {
+    path: 'register',
+    element: <RegForm />,
+  },
+  {
+    path: 'logout',
+    label: 'Выйти',
+    element: <Logout />,
+    bottom: true,
+  },
+  {
     path: '/',
     label: 'Главная',
     hidden: true,
@@ -48,17 +47,16 @@ export const route: AppRoute[] =
       },
       {
         path: 'project/:uuid',
-        element: <Task />
+        element: <Task />,
       },
       {
         path: 'project/tasks/new',
-        element: <DatilsTask />
+        element: <DatilsTask />,
       },
       {
         path: 'project/tasks/:uuid',
-        element: <DatilsTask />
-      }
+        element: <DatilsTask />,
+      },
     ],
-},
-
+  },
 ];

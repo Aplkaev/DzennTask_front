@@ -4,17 +4,17 @@
   padding: 5px;
   width: 95%;
   margin: 5px;
-  transition:0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
   border: 1px solid transparent;
 }
-.menu-route-project:hover{
+.menu-route-project:hover {
   color: #fff;
   font-weight: 800;
   box-shadow:
     3px 3px #fff,
     -3px 0 3px #9f9e9e;
 }
-.menu-active-project { 
+.menu-active-project {
   border: 3px solid;
   background: #282828;
   border-color: #fff;
@@ -40,12 +40,12 @@
 }
 
 .task-items::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
 
-.details-task-dialog { 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.details-task-dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

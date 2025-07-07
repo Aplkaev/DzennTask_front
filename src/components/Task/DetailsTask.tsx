@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Button,
@@ -7,11 +7,11 @@ import {
   Portal,
   Textarea,
   Input,
-} from "@chakra-ui/react";
-import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toaster, Toaster } from "@/components/ui/toaster";
-import { useUpdateTask } from "@/store/task/useTaskStore";
+} from '@chakra-ui/react';
+import { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toaster, Toaster } from '@/components/ui/toaster';
+import { useUpdateTask } from '@/store/task/useTaskStore';
 
 export default function DetailsTask({ task, onClose }) {
   const [localTask, setLocalTask] = useState({ ...task });
@@ -19,13 +19,13 @@ export default function DetailsTask({ task, onClose }) {
     setLocalTask({ ...task });
   }, [task]);
 
-  const update = async () => { 
+  const update = async () => {
     console.log('update', localTask);
-    
+
     await useUpdateTask(task.id, localTask);
 
     onClose();
-  }
+  };
 
   return (
     <Dialog.Root
@@ -44,10 +44,12 @@ export default function DetailsTask({ task, onClose }) {
                   placeholder="Название задачи"
                   value={localTask.title}
                   variant="flushed"
-                  onChange={(e)=>setLocalTask((prev) => ({
-                    ...prev,
-                    title: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setLocalTask((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
                 />
               </Dialog.Title>
               <Dialog.CloseTrigger asChild>
@@ -59,15 +61,16 @@ export default function DetailsTask({ task, onClose }) {
                 variant="flushed"
                 placeholder="Описание задачи"
                 value={localTask.description}
-                onChange={(e)=>setLocalTask((prev) => ({
-                  ...prev,
-                  description: e.target.value
-                }))}
+                onChange={(e) =>
+                  setLocalTask((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
               />
               <Button onClick={update}>Создать</Button>
             </Dialog.Body>
           </Dialog.Content>
-          
         </Dialog.Positioner>
       </Portal>
     </Dialog.Root>
