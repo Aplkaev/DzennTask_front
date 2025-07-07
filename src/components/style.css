@@ -38,7 +38,14 @@
 .task-items::-webkit-scrollbar {
   width: 6px;
 }
+
 .task-items::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,0.2);
   border-radius: 3px;
+}
+
+.details-task-dialog { 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

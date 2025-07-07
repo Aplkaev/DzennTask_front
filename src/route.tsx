@@ -3,7 +3,9 @@ import RegForm from './containers/auth/RegForm';
 import HomePage from './components/HomePages';
 import NewProject from './components/Project/NewProject';
 import Logout from './containers/auth/Logout';
-import Task from './components/Task/Task';
+import Task from './components/Task/TaskList';
+import DatilsTask from './components/Task/DetailsTask';
+import type { ReactNode } from 'react';
 
 export type AppRoute = {
   path: string;
@@ -47,6 +49,14 @@ export const route: AppRoute[] =
       {
         path: 'project/:uuid',
         element: <Task />
+      },
+      {
+        path: 'project/tasks/new',
+        element: <DatilsTask />
+      },
+      {
+        path: 'project/tasks/:uuid',
+        element: <DatilsTask />
       }
     ],
 },
