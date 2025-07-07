@@ -49,8 +49,16 @@ const taskStore: StateCreator<ITaskState, [["zustand/devtools", never]]> = (
   done: async (id: string) => {
     api.put(`/tasks/${id}/done`);
   },
-  update: async(id: string, task: ITask) => { 
-    api.put(`/tasks/${id}`, task);
+  update: async(id: string, updatedTask: ITask) => { 
+    api.put(`/tasks/${id}`, updatedTask);
+
+    const currentTasks = get().tasks;
+
+    const updatedTasks = currentTasks.map((task) =>
+      task.id === id ? { ...task, ...updatedTask } : task
+    );
+
+    set({ tasks: updatedTasks });
   },
   remove: async (id: string) => {
     api.delete(`/tasks/${id}`);
