@@ -37,13 +37,13 @@ const Sidebar = () => {
       <VStack align="stretch" spacing={3}>
         {/* вынести в отдельный компонент */}
         {topLevelRoutes.map((r) => (
-          <MenuSidebar menu={r}/> 
+          <MenuSidebar key={r.path} menu={r}/> 
         ))}
 
         <ProjectSidebar />
 
         {bottomLevelRoutes.map((r) => (
-          <MenuSidebar menu={r}/> 
+          <MenuSidebar key={r.path} menu={r}/> 
         ))}
       </VStack>
     </Box>

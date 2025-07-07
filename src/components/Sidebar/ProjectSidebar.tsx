@@ -10,7 +10,7 @@ const ProjectSidebar = () => {
   return (
     <Box>
         {useProjects().map((project) => (
-          <ProjectSidebarItem project={project}></ProjectSidebarItem>
+          <ProjectSidebarItem key={project.id} project={project}></ProjectSidebarItem>
     ))}
     </Box>
   )
