@@ -3,22 +3,30 @@ import { createTask } from '@/store/task/useTaskStore';
 import { useUser } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
 import { useState } from 'react';
+import DetailsTask from './DetailsTask';
+import { useNewTask } from '@/store/task/useTaskStore';
 
 const CreateTask = () => {
-  const [newTask, setNewTask] = useState('');
+  const [newTaskTitle, setNewTask] = useState('');
+  const newTask = useNewTask();
   const project = useProject();
   const user = useUser();
+  const [isOpenDetails, setIsOpenDetails] = useState(false);
+  const setDetails = () => {
+    setIsOpenDetails((prev) => !prev);
+  };
 
   const addTask = async () => {
-    if (newTask.trim()) {
+    if (newTaskTitle.trim()) {
       await createTask({
         id: null,
         status: 'new',
-        title: newTask,
+        title: newTaskTitle,
         priority: 1,
         project_id: project?.id ?? '',
         assigned_to_id: user?.user_id ?? '',
       });
+      setIsOpenDetails((prev) => !prev);
     }
   };
 
@@ -28,14 +36,18 @@ const CreateTask = () => {
       <HStack mb={4}>
         <Input
           placeholder="Добавить новую задачу..."
-          value={newTask}
+          value={newTaskTitle}
           onChange={(e) => setNewTask(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && addTask()}
+          onKeyDown={(e) => e.key === 'Enter' && addTask()}
         />
         <Button variant="subtle" onClick={addTask}>
           Добавить
         </Button>
       </HStack>
+      {isOpenDetails && 
+        newTask && (
+        <DetailsTask task={newTask} onClose={() => setDetails()} />
+      )}
     </Box>
   );
 };

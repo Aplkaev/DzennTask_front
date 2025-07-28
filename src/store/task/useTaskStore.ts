@@ -1,6 +1,6 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
-import { createJSONStorage, persist, devtools } from 'zustand/middleware';
+import {  devtools } from 'zustand/middleware';
 
 interface IActon {
   create: (task: ITask) => void;
@@ -21,12 +21,14 @@ interface ITask {
 
 interface ITaskList {
   tasks: ITask[];
+  newTask: ITask|null;
 }
 
 interface ITaskState extends IActon, ITaskList {}
 
 const initialState: ITaskList = {
   tasks: [],
+  newTask: null
 };
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
@@ -35,11 +37,13 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 ) => ({
   ...initialState,
   create: async (task: ITask) => {
-    await api.post('/tasks', task);
+    const { data } = await api.post('/tasks', task);
 
     const currentTasks = get().tasks;
 
-    set({ tasks: [task, ...currentTasks] });
+    set({newTask: data})
+
+    set({ tasks: [data, ...currentTasks] });
   },
   getImportant: async (id: string) => {
     const { data } = await api.get(`/tasks/project/${id}`);
@@ -85,3 +89,4 @@ export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
 export const useUpdateTask = (id: string, task: ITask) =>
   useTaskStore.getState().update(id, task);
+export const useNewTask = () => useTaskStore((state) => state.newTask);
