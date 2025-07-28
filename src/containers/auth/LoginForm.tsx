@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Toaster, toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login } from '@/store/auth/useAuthStore';
+import { useProject } from '@/store/project/useProjectStore';
 
 interface FormValues {
   username: string;
@@ -12,6 +13,7 @@ interface FormValues {
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const project = useProject();
 
   const {
     register,
@@ -20,27 +22,31 @@ export default function LoginForm() {
   } = useForm<FormValues>();
 
   const onSubmit = handleSubmit(async (data) => {
-    // try {
-    await login({
-      email: data.username,
-      password: data.password,
-    });
-    toaster.create({
-      title: 'Авторизация успешна',
-      type: 'success',
-      duration: 5000,
-    });
-    navigate('/');
-    // } catch(error) {
-    //   console.log(error);
+    try {
+      await login({
+        email: data.username,
+        password: data.password,
+      });
+      toaster.create({
+        title: 'Авторизация успешна',
+        type: 'success',
+        duration: 5000,
+      });
+      if(project) { 
+        navigate(`/project/${project.id}`);
+      } else { 
+        navigate('/');
+      }
+    } catch(error) {
+      console.log(error);
 
-    //   toaster.create({
-    //     description: error instanceof Error ? error.message : "Неизвестная ошибка",
-    //     title: "Ошибка авторизации",
-    //     type: "error",
-    //     duration: 5000
-    //   })
-    // }
+      toaster.create({
+        description: error instanceof Error ? error.message : "Неизвестная ошибка",
+        title: "Ошибка авторизации",
+        type: "error",
+        duration: 5000
+      })
+    }
   });
 
   return (
