@@ -1,6 +1,4 @@
 import { Provider } from '@/components/ui/provider';
-import { Theme } from '@chakra-ui/react';
-import { ColorModeProvider } from '@/components/ui/color-mode';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './Router';
 import { useEffect } from 'react';
@@ -14,11 +12,7 @@ export default function App() {
   }, []);
   return (
     <Provider>
-      <ColorModeProvider>
-        <Theme>
-          <RouterProvider router={router} />
-        </Theme>
-      </ColorModeProvider>
+      <RouterProvider router={router} />
     </Provider>
   );
 }
