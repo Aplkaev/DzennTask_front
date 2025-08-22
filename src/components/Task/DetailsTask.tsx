@@ -7,22 +7,36 @@ import {
   Portal,
   Textarea,
   Input,
+  NumberInput,
 } from '@chakra-ui/react';
-import { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { toaster, Toaster } from '@/components/ui/toaster';
-import { useUpdateTask } from '@/store/task/useTaskStore';
+import { useUpdateTask, createTask } from '@/store/task/useTaskStore';
 
-export default function DetailsTask({ task, onClose }) {
-  const [localTask, setLocalTask] = useState({ ...task });
+export default function DetailsTask({ task = null, onClose }) {
+  // дефолтные значения для новой задачи
+  const defaultTask = {
+    title: '',
+    description: '',
+    priority: 1,
+  };
+
+  const [localTask, setLocalTask] = useState(task ? { ...task } : defaultTask);
+
   useEffect(() => {
-    setLocalTask({ ...task });
+    setLocalTask(task ? { ...task } : defaultTask);
   }, [task]);
 
   const update = async () => {
-    console.log('update', localTask);
+    console.log('save', localTask);
 
-    await useUpdateTask(task.id, localTask);
+    if (task?.id) {
+      // обновление существующей
+      await useUpdateTask(task.id, localTask);
+    } else {
+      // создание новой
+      await useCreateTask(localTask);
+    }
 
     onClose();
   };
@@ -40,6 +54,7 @@ export default function DetailsTask({ task, onClose }) {
           <Dialog.Content>
             <Dialog.Header>
               <Dialog.Title>
+                Название
                 <Input
                   placeholder="Название задачи"
                   value={localTask.title}
@@ -57,18 +72,38 @@ export default function DetailsTask({ task, onClose }) {
               </Dialog.CloseTrigger>
             </Dialog.Header>
             <Dialog.Body className="details-task-dialog">
-              <Textarea
-                variant="flushed"
-                placeholder="Описание задачи"
-                value={localTask.description}
-                onChange={(e) =>
-                  setLocalTask((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-              />
-              <Button onClick={update}>Создать</Button>
+              <div>
+                Приоритет
+                <NumberInput.Root
+                  width="200px"
+                  value={localTask.priority}
+                  onValueChange={(e) =>
+                    setLocalTask((prev) => ({
+                      ...prev,
+                      priority: Number(e.value), // ✅ теперь сохраняется в localTask
+                    }))
+                  }
+                >
+                  <NumberInput.Control />
+                  <NumberInput.Input />
+                </NumberInput.Root>
+                Описание
+                <Textarea
+                  variant="flushed"
+                  placeholder="Описание задачи"
+                  value={localTask.description}
+                  onChange={(e) =>
+                    setLocalTask((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <Button onClick={update}>
+                {task?.id ? 'Сохранить' : 'Создать'}
+              </Button>
             </Dialog.Body>
           </Dialog.Content>
         </Dialog.Positioner>

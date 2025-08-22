@@ -42,7 +42,7 @@ const TaskItem = ({ task }) => {
       <HStack key={task.id}>
         <Stack align="flex-start">
           <Checkbox.Root defaultChecked={task.status === 'done'}>
-            <Checkbox.HiddenInput />-
+            <Checkbox.HiddenInput />
             <Checkbox.Control onClick={() => updateTask(task)}>
               <Checkbox.Indicator />
             </Checkbox.Control>
