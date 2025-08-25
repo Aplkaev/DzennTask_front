@@ -5,7 +5,7 @@ const MenuSidebar = ({ menu }) => {
   return (
     <Box>
       <div className="menu-route-main">
-        <Link as={RouterLink} key={menu.path} to={menu.path} color={'#FFF'}>
+        <Link as={RouterLink} key={menu.path} to={menu.path}>
           {menu.label}
         </Link>
       </div>

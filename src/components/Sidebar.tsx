@@ -33,7 +33,6 @@ const Sidebar = () => {
   return (
     <Box w="250px" h="100vh" p={4}>
       <VStack align="stretch" spacing={3}>
-        {/* вынести в отдельный компонент */}
         {topLevelRoutes.map((r) => (
           <MenuSidebar key={r.path} menu={r} />
         ))}
