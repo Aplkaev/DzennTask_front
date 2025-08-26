@@ -1,10 +1,10 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
-import {  devtools } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 
 interface IActon {
   create: (task: ITask) => void;
-  fetch: (id: string) => void;
+  fetch: (id: string, filter?: Record<string, any>) => void;
   remove: (id: string) => void;
   done: (id: string) => void;
   update: (id: string, Task: ITask) => void;
@@ -21,14 +21,14 @@ interface ITask {
 
 interface ITaskList {
   tasks: ITask[];
-  newTask: ITask|null;
+  newTask: ITask | null;
 }
 
 interface ITaskState extends IActon, ITaskList {}
 
 const initialState: ITaskList = {
   tasks: [],
-  newTask: null
+  newTask: null,
 };
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
@@ -41,7 +41,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     const currentTasks = get().tasks;
 
-    set({newTask: data})
+    set({ newTask: data });
 
     set({ tasks: [data, ...currentTasks] });
   },
@@ -73,8 +73,15 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: tasks });
   },
-  fetch: async (id: string) => {
-    const { data } = await api.get(`/tasks/project/${id}`);
+  fetch: async (id: string, filter: Record<string, any> = {}) => {
+    const params = new URLSearchParams(
+      filter as Record<string, string>
+    ).toString();
+    const url = params
+      ? `/tasks/project/${id}?${params}`
+      : `/tasks/project/${id}`;
+
+    const { data } = await api.get(url);
 
     set({ tasks: data.items || [] });
   },
@@ -82,8 +89,10 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
 const useTaskStore = create<ITaskState>()(devtools(taskStore));
 
-export const createTask = (task: ITask) => useTaskStore.getState().create(task);
-export const fetchTasks = (id: string) => useTaskStore.getState().fetch(id);
+export const useCreateTask = (task: ITask) =>
+  useTaskStore.getState().create(task);
+export const fetchTasks = (id: string, filter: Record<string, any> = {}) =>
+  useTaskStore.getState().fetch(id, filter);
 export const useTasks = () => useTaskStore((state) => state.tasks);
 export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
