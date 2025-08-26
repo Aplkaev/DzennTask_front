@@ -1,5 +1,5 @@
 import { Box, HStack, Input, Button, Heading } from '@chakra-ui/react';
-import { createTask } from '@/store/task/useTaskStore';
+import { useCreateTask } from '@/store/task/useTaskStore';
 import { useUser } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ const CreateTask = () => {
 
   const addTask = async () => {
     if (newTaskTitle.trim()) {
-      await createTask({
+      await useCreateTask({
         id: null,
         status: 'new',
         title: newTaskTitle,
