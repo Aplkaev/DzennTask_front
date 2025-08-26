@@ -1,5 +1,5 @@
 import { Button, Field, Input, Stack, Box, Text, Link } from '@chakra-ui/react';
-import { Toaster, toaster } from '@/components/ui/toaster';
+import { toaster } from '@/components/ui/toaster';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -114,8 +114,6 @@ export default function RegForm() {
           </Link>
         </Text>
       </Stack>
-
-      <Toaster />
     </Box>
   );
 }

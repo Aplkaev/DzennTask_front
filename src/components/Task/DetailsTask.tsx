@@ -10,7 +10,7 @@ import {
   NumberInput,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { toaster, Toaster } from '@/components/ui/toaster';
+import { toaster } from '@/components/ui/toaster';
 import { useUpdateTask, createTask } from '@/store/task/useTaskStore';
 
 export default function DetailsTask({ task = null, onClose }) {

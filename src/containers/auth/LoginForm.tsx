@@ -1,7 +1,7 @@
 import { Button, Field, Input, Stack, Box, Text, Link } from '@chakra-ui/react';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useForm } from 'react-hook-form';
-import { Toaster, toaster } from '@/components/ui/toaster';
+import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
@@ -32,20 +32,21 @@ export default function LoginForm() {
         type: 'success',
         duration: 5000,
       });
-      if(project) { 
+      if (project) {
         navigate(`/project/${project.id}`);
-      } else { 
+      } else {
         navigate('/');
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error);
 
       toaster.create({
-        description: error instanceof Error ? error.message : "Неизвестная ошибка",
-        title: "Ошибка авторизации",
-        type: "error",
-        duration: 5000
-      })
+        description:
+          error instanceof Error ? error.message : 'Неизвестная ошибка',
+        title: 'Ошибка авторизации',
+        type: 'error',
+        duration: 5000,
+      });
     }
   });
 
@@ -83,7 +84,6 @@ export default function LoginForm() {
           </Link>
         </Text>
       </Stack>
-      <Toaster />
     </Box>
   );
 }

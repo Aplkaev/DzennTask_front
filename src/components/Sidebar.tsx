@@ -1,8 +1,9 @@
-import { Box, VStack } from '@chakra-ui/react';
+import { Box, VStack, ClientOnly, Skeleton } from '@chakra-ui/react';
 import { route, type AppRoute } from '@/route';
 import ProjectSidebar from './Sidebar/ProjectSidebar';
 import './style.css';
 import MenuSidebar from './Sidebar/MenuSidebar';
+import { ColorModeToggle } from './color-mode-toggle';
 
 const Sidebar = () => {
   const topLevelRoutes: AppRoute[] = [];
@@ -43,6 +44,9 @@ const Sidebar = () => {
           <MenuSidebar key={r.path} menu={r} />
         ))}
       </VStack>
+      <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
+        <ColorModeToggle />
+      </ClientOnly>
     </Box>
   );
 };

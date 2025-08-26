@@ -16,11 +16,6 @@ export default function HomePage() {
           </Box>
         </Box>
       </ProtectedRoute>
-      <Box pos="absolute" top="4" right="4">
-        <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
-          <ColorModeToggle />
-        </ClientOnly>
-      </Box>
     </Flex>
   );
 }
