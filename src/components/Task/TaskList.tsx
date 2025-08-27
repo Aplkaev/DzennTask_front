@@ -31,6 +31,8 @@ export default function TaskList() {
   const [statusFilter, setStatusFilter] = useState<'new' | 'done' | 'all'>(
     'new'
   );
+  const [textFilter, setTextFilter] = useState('');
+
   const filterStatusTask = () => {
     if (statusFilter === 'new') {
       setStatusFilter('done');
@@ -41,16 +43,17 @@ export default function TaskList() {
     }
     loadTasks();
   };
-  const loadTasks = async () => {
+
+  const loadTasks = async (text = '') => {
     if (!project) return;
     // нужно получить саму приоритетную
     // но только если такое выставлено в настройках,
     // todo надо сделать настройки юзера
     try {
-      await fetchTasks(
-        project.id,
-        statusFilter === 'all' ? {} : { status: statusFilter }
-      );
+      await fetchTasks(project.id, {
+        ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
+        ...(text ? { text } : {}),
+      });
     } catch (e) {
       tasks.length = 0;
       toaster.create({
@@ -63,6 +66,7 @@ export default function TaskList() {
     }
   };
 
+  // грузим при смене проекта
   useEffect(() => {
     if (taskContainerRef.current) {
       taskContainerRef.current.scrollTop =
@@ -72,24 +76,17 @@ export default function TaskList() {
     loadTasks();
   }, [project?.id]);
 
+  // грузим при смене статуса
+  useEffect(() => {
+    loadTasks(textFilter);
+  }, [statusFilter]);
+
+
+
   return (
     <Box p={4} appearance="light" className="task-view">
-      <Topbar></Topbar>
-      {/* 
-        добавить кнопку выполнения
-        селектор статуса
-        селектор канбана
-      */}
-      <Stack align="stretch" className="task-items">
-        <Stack align="stretch" className="task-items" ref={taskContainerRef}>
-          {tasks.length === 0 ? (
-            <EmptyTask />
-          ) : (
-            tasks.map((task) => <TaskItem key={task.id} task={task} />)
-          )}
-        </Stack>
-      </Stack>
-      <Stack align="flex-start">
+      <Topbar onSearch={setTextFilter} onSubmitSearch={() => loadTasks(textFilter)}/>
+      <Stack align="flex-start" p={4}>
         <Checkbox.Root checked={statusFilter !== 'new'}>
           <Checkbox.HiddenInput />
           <Checkbox.Control onClick={filterStatusTask}>
@@ -104,6 +101,22 @@ export default function TaskList() {
           </Checkbox.Label>
         </Checkbox.Root>
       </Stack>
+      <hr />
+      {/* 
+        добавить кнопку выполнения
+        селектор статуса
+        селектор канбана
+      */}
+      <Stack align="stretch" className="task-items" p={4}>
+        <Stack align="stretch" className="task-items" ref={taskContainerRef}>
+          {tasks.length === 0 ? (
+            <EmptyTask />
+          ) : (
+            tasks.map((task) => <TaskItem key={task.id} task={task} />)
+          )}
+        </Stack>
+      </Stack>
+
       <CreateTask></CreateTask>
     </Box>
   );

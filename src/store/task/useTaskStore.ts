@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware';
 
 interface IActon {
   create: (task: ITask) => void;
-  fetch: (id: string, filter?: Record<string, any>) => void;
+  fetch: (id: string, filter?: Record<string, any>, text?: string) => void;
   remove: (id: string) => void;
   done: (id: string) => void;
   update: (id: string, Task: ITask) => void;
@@ -73,12 +73,18 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: tasks });
   },
-  fetch: async (id: string, filter: Record<string, any> = {}) => {
-    const params = new URLSearchParams(
-      filter as Record<string, string>
-    ).toString();
+  fetch: async (
+    id: string,
+    filter: Record<string, any> = {},
+    text?: string
+  ) => {
+    const params = new URLSearchParams(filter as Record<string, string>);
+
+    if (text) {
+      params.set('text', text);
+    }
     const url = params
-      ? `/tasks/project/${id}?${params}`
+      ? `/tasks/project/${id}?${params.toString()}`
       : `/tasks/project/${id}`;
 
     const { data } = await api.get(url);
@@ -91,8 +97,11 @@ const useTaskStore = create<ITaskState>()(devtools(taskStore));
 
 export const useCreateTask = (task: ITask) =>
   useTaskStore.getState().create(task);
-export const fetchTasks = (id: string, filter: Record<string, any> = {}) =>
-  useTaskStore.getState().fetch(id, filter);
+export const fetchTasks = (
+  id: string,
+  filter: Record<string, any> = {},
+  text?: string
+) => useTaskStore.getState().fetch(id, filter);
 export const useTasks = () => useTaskStore((state) => state.tasks);
 export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
