@@ -1,39 +1,13 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
-
-interface IUserLogin {
-  email: string;
-  password: string;
-}
-
-interface IAction {
-  login: (user: IUserLogin) => void;
-  logout: () => void;
-  register: (user: IUserLogin) => void;
-  getMe: () => void;
-}
-interface IUser {
-  user_id: string;
-  email: string;
-  avatar_url: string | null;
-}
-
-interface IAuth {
-  refreshToken: string | null;
-  token: string | null;
-  user: IUser | null;
-  isAuthenticated: boolean;
-}
-
+import type { IAuthState, IUserLogin, IAuth } from './types';
 const initialState: IAuth = {
   isAuthenticated: false,
   refreshToken: null,
   token: null,
   user: null,
 };
-
-interface IAuthState extends IAction, IAuth {}
 
 const authStore: StateCreator<
   IAuthState,
