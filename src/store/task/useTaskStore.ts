@@ -1,30 +1,7 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
 import { devtools } from 'zustand/middleware';
-
-interface IActon {
-  create: (task: ITask) => void;
-  fetch: (id: string, filter?: Record<string, any>, text?: string) => void;
-  remove: (id: string) => void;
-  done: (id: string) => void;
-  update: (id: string, Task: ITask) => void;
-}
-
-interface ITask {
-  id: string | null;
-  title: string | null;
-  status: string | null;
-  priority: number | null;
-  project_id: string | null;
-  assigned_to_id: string | null;
-}
-
-interface ITaskList {
-  tasks: ITask[];
-  newTask: ITask | null;
-}
-
-interface ITaskState extends IActon, ITaskList {}
+import type { ITaskList, ITask, ITaskState } from './types';
 
 const initialState: ITaskList = {
   tasks: [],
