@@ -2,10 +2,12 @@ import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
 import { devtools } from 'zustand/middleware';
 import type { ITaskList, ITask, ITaskState } from './types';
+import OneTask from '@/components/Task/OneTask';
 
 const initialState: ITaskList = {
   tasks: [],
   newTask: null,
+  oneTask: true,
 };
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
@@ -41,6 +43,15 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: updatedTasks });
   },
+  setStatus: async (task: ITask, status: string = 'done') => {
+    if (!task.id) {
+      return;
+    }
+
+    task.status = status;
+
+    get().update(task.id, task);
+  },
   remove: async (id: string) => {
     api.delete(`/tasks/${id}`);
 
@@ -68,6 +79,9 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: data.items || [] });
   },
+  toggleOneTaskView: () => {
+    set({ oneTask: !get().oneTask });
+  },
 });
 
 const useTaskStore = create<ITaskState>()(devtools(taskStore));
@@ -78,10 +92,14 @@ export const fetchTasks = (
   id: string,
   filter: Record<string, any> = {},
   text?: string
-) => useTaskStore.getState().fetch(id, filter);
+) => useTaskStore.getState().fetch(id, filter, text);
 export const useTasks = () => useTaskStore((state) => state.tasks);
 export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
 export const useUpdateTask = (id: string, task: ITask) =>
   useTaskStore.getState().update(id, task);
 export const useNewTask = () => useTaskStore((state) => state.newTask);
+export const useSetStatus = (task: ITask, status: string) =>
+  useTaskStore.getState().setStatus(task, status);
+export const useOneTaskView = () => useTaskStore((state) => state.oneTask);
+export const useToggleOneTaskView = () => useTaskStore((state) => state.toggleOneTaskView);

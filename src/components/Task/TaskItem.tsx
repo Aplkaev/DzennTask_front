@@ -5,8 +5,6 @@ import {
   Checkbox,
   Text,
   Button,
-  Link,
-  Collapsible,
 } from '@chakra-ui/react';
 import {
   useRemoveTask,
@@ -15,13 +13,15 @@ import {
 } from '@/store/task/useTaskStore';
 import DetailsTask from './DetailsTask';
 import { useState } from 'react';
+import type { ITask } from '@/store/task/types';
+interface TaskItemProps { 
+  task: Omit<ITask, 'id' | 'title'> & { id: string, title: string };
+}
 
-const TaskItem = ({ task }) => {
+const TaskItem = ({ task }: TaskItemProps) => {
   const pathDatailsTask = '/project/tasks/' + task.id;
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-
-  const updateTask = async (task) => {
-    console.log(task);
+  const updateTask = async () => {
 
     if (task.status !== 'done') {
       task.status = 'done';
@@ -43,23 +43,21 @@ const TaskItem = ({ task }) => {
         <Stack align="flex-start">
           <Checkbox.Root defaultChecked={task.status === 'done'}>
             <Checkbox.HiddenInput />
-            <Checkbox.Control onClick={() => updateTask(task)}>
+            <Checkbox.Control onClick={() => updateTask()}>
               <Checkbox.Indicator />
             </Checkbox.Control>
-            <Checkbox.Label>{task.label}</Checkbox.Label>
+            <Checkbox.Label onClick={setDetails}>{task.title}</Checkbox.Label>
           </Checkbox.Root>
         </Stack>
         <Box flex="1" onClick={setDetails} cursor="pointer" width={'100px'}>
-          <Text flex={1} truncate>
-            {task.title}
-          </Text>
           <Text truncate fontSize="sm" color="gray.400">
             {task.description}
           </Text>
         </Box>
         <Button
           size="sm"
-          colorScheme="red"
+          variant="surface"
+          colorPalette={"red"}
           onClick={() => useRemoveTask(task.id)}
         >
           Удалить

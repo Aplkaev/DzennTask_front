@@ -10,19 +10,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useProject } from '@/store/project/useProjectStore';
-import { useTasks, fetchTasks, useCreateTask } from '@/store/task/useTaskStore';
-import { useUser } from '@/store/auth/useAuthStore';
+import { useTasks, fetchTasks, useCreateTask, useOneTaskView, useToggleOneTaskView } from '@/store/task/useTaskStore';
 import CreateTask from './CreateTask';
 import TaskItem from './TaskItem';
 import Topbar from '../Topbar/Topbar';
 import { toaster } from '@/components/ui/toaster';
 import EmptyTask from './EmptyTask';
-
-interface Task {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+import OneTask from './OneTask';
+import type { ITask } from '@/store/task/types';
 
 export default function TaskList() {
   const project = useProject();
@@ -32,6 +27,10 @@ export default function TaskList() {
     'new'
   );
   const [textFilter, setTextFilter] = useState('');
+  // const [isOpenOneTask, setIsOpenOneTask] = useState(true);
+  const [maxPriorityTask, setMaxPriorityTask] = useState<ITask>();
+  
+  const isOpenOneTask = useOneTaskView();
 
   const filterStatusTask = () => {
     if (statusFilter === 'new') {
@@ -66,7 +65,6 @@ export default function TaskList() {
     }
   };
 
-  // грузим при смене проекта
   useEffect(() => {
     if (taskContainerRef.current) {
       taskContainerRef.current.scrollTop =
@@ -76,16 +74,31 @@ export default function TaskList() {
     loadTasks();
   }, [project?.id]);
 
-  // грузим при смене статуса
   useEffect(() => {
     loadTasks(textFilter);
   }, [statusFilter]);
 
-
+  useEffect(() => {
+    if (tasks.length === 0) {
+      return;
+    }
+    const taskMaxPriority = [...tasks].sort(
+      (a, b) => (b.priority ?? 0) - (a.priority ?? 0)
+    )[0];
+    console.log(taskMaxPriority, isOpenOneTask);
+    
+    setMaxPriorityTask(taskMaxPriority);
+  }, [tasks]);
 
   return (
     <Box p={4} appearance="light" className="task-view">
-      <Topbar onSearch={setTextFilter} onSubmitSearch={() => loadTasks(textFilter)}/>
+      {maxPriorityTask && isOpenOneTask && (
+        <OneTask task={maxPriorityTask} />
+      )}
+      <Topbar
+        onSearch={setTextFilter}
+        onSubmitSearch={() => loadTasks(textFilter)}
+      />
       <Stack align="flex-start" p={4}>
         <Checkbox.Root checked={statusFilter !== 'new'}>
           <Checkbox.HiddenInput />

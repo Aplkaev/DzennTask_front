@@ -1,9 +1,10 @@
-import { Box, VStack, ClientOnly, Skeleton } from '@chakra-ui/react';
+import { Box, VStack, ClientOnly, Skeleton, Button } from '@chakra-ui/react';
 import { route, type AppRoute } from '@/route';
 import ProjectSidebar from './Sidebar/ProjectSidebar';
 import './style.css';
 import MenuSidebar from './Sidebar/MenuSidebar';
 import { ColorModeToggle } from './color-mode-toggle';
+import { useToggleOneTaskView } from '@/store/task/useTaskStore';
 
 const Sidebar = () => {
   const topLevelRoutes: AppRoute[] = [];
@@ -30,6 +31,8 @@ const Sidebar = () => {
   };
 
   walk(route);
+  
+  const toggleOneTaskView = useToggleOneTaskView();
 
   return (
     <Box w="250px" h="100vh" p={4}>
@@ -47,6 +50,7 @@ const Sidebar = () => {
       <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
         <ColorModeToggle />
       </ClientOnly>
+      <Button onClick={toggleOneTaskView}>Задача</Button>
     </Box>
   );
 };

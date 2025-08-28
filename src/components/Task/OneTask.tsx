@@ -1,34 +1,58 @@
 import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react';
+import type { ITask } from '@/store/task/types';
+import { useDoneTask, useToggleOneTaskView } from '@/store/task/useTaskStore';
 
-export default function OneTask() {
+interface DetailsTaskPorps {
+  task?: ITask;
+}
+
+export default function OneTask({
+  task = {
+    id: null,
+    title: null,
+    status: null,
+    priority: null,
+    project_id: null,
+    assigned_to_id: null,
+    description: null,
+  },
+}: DetailsTaskPorps) {
+  const clickDoneTask = async () => {
+    if (task.id) {
+      useDoneTask(task.id);
+    }
+  };
+
+  const toggleOneTaskView = useToggleOneTaskView();
+
   return (
-    <Dialog.Root size="full" motionPreset="slide-in-bottom">
-      <Dialog.Trigger asChild>
-        <Button variant="outline" size="sm">
-          Open Dialog
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root size="full" motionPreset="slide-in-bottom" open={true}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Dialog Title</Dialog.Title>
+              <Dialog.Title>{task.title}</Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </Dialog.Body>
+            <Dialog.Body>{task.description}</Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button
+                  variant="outline"
+                  onClick={clickDoneTask}
+                  colorPalette={'green'}
+                >
+                  Готово
+                </Button>
               </Dialog.ActionTrigger>
-              <Button>Save</Button>
+              <Dialog.ActionTrigger asChild>
+                <Button variant="outline" onClick={toggleOneTaskView}>
+                  Cancel
+                </Button>
+              </Dialog.ActionTrigger>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton size="sm" onClick={toggleOneTaskView} />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>

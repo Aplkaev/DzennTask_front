@@ -79,7 +79,7 @@ export default function DetailsTask({
                     }))
                   }
                 />
-              </Dialog.Title>
+              </Dialog.Title >
               <Dialog.CloseTrigger asChild>
                 <CloseButton size="sm" onClick={onClose} />
               </Dialog.CloseTrigger>

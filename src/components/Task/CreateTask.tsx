@@ -32,7 +32,6 @@ const CreateTask = () => {
 
   return (
     <Box>
-      <Heading mb={6}>Мой Таск-Менеджер</Heading>
       <HStack mb={4}>
         <Input
           placeholder="Добавить новую задачу..."

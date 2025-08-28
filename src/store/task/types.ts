@@ -4,6 +4,8 @@ interface IActon {
   remove: (id: string) => void;
   done: (id: string) => void;
   update: (id: string, Task: ITask) => void;
+  setStatus: (task: ITask, status: string) => void;
+  toggleOneTaskView: () => void;
 }
 
 interface ITask {
@@ -19,6 +21,7 @@ interface ITask {
 interface ITaskList {
   tasks: ITask[];
   newTask: ITask | null;
+  oneTask: boolean
 }
 
 interface ITaskState extends IActon, ITaskList {}
