@@ -31,7 +31,7 @@ const Sidebar = () => {
   };
 
   walk(route);
-  
+
   const toggleOneTaskView = useToggleOneTaskView();
 
   return (
@@ -46,11 +46,12 @@ const Sidebar = () => {
         {bottomLevelRoutes.map((r) => (
           <MenuSidebar key={r.path} menu={r} />
         ))}
+        <Button onClick={toggleOneTaskView}>Основная задача</Button>
+        <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
+          <ColorModeToggle />
+        </ClientOnly>
+        
       </VStack>
-      <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
-        <ColorModeToggle />
-      </ClientOnly>
-      <Button onClick={toggleOneTaskView}>Задача</Button>
     </Box>
   );
 };

@@ -39,8 +39,6 @@ export default function DetailsTask({
   }, [task]);
 
   const update = async () => {
-    console.log('save', localTask);
-
     if (task?.id) {
       // обновление существующей
       await useUpdateTask(task.id, localTask);

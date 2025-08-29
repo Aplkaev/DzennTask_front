@@ -31,6 +31,11 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
   },
   done: async (id: string) => {
     api.put(`/tasks/${id}/done`);
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id ? { ...task, status: 'done' } : task
+      ),
+    }));
   },
   update: async (id: string, updatedTask: ITask) => {
     api.put(`/tasks/${id}`, updatedTask);
@@ -102,4 +107,5 @@ export const useNewTask = () => useTaskStore((state) => state.newTask);
 export const useSetStatus = (task: ITask, status: string) =>
   useTaskStore.getState().setStatus(task, status);
 export const useOneTaskView = () => useTaskStore((state) => state.oneTask);
-export const useToggleOneTaskView = () => useTaskStore((state) => state.toggleOneTaskView);
+export const useToggleOneTaskView = () =>
+  useTaskStore((state) => state.toggleOneTaskView);

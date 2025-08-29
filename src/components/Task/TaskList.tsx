@@ -78,14 +78,14 @@ export default function TaskList() {
     loadTasks(textFilter);
   }, [statusFilter]);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (tasks.length === 0) {
       return;
     }
+    
     const taskMaxPriority = [...tasks].sort(
       (a, b) => (b.priority ?? 0) - (a.priority ?? 0)
-    )[0];
-    console.log(taskMaxPriority, isOpenOneTask);
+    ).find((task:ITask) => task.status === 'new');
     
     setMaxPriorityTask(taskMaxPriority);
   }, [tasks]);
