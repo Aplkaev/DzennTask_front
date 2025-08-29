@@ -7,7 +7,7 @@ import OneTask from '@/components/Task/OneTask';
 const initialState: ITaskList = {
   tasks: [],
   newTask: null,
-  oneTask: true,
+  isOneTask: true,
 };
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
@@ -85,7 +85,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     set({ tasks: data.items || [] });
   },
   toggleOneTaskView: () => {
-    set({ oneTask: !get().oneTask });
+    set({ isOneTask: !get().isOneTask });
   },
 });
 
@@ -106,6 +106,6 @@ export const useUpdateTask = (id: string, task: ITask) =>
 export const useNewTask = () => useTaskStore((state) => state.newTask);
 export const useSetStatus = (task: ITask, status: string) =>
   useTaskStore.getState().setStatus(task, status);
-export const useOneTaskView = () => useTaskStore((state) => state.oneTask);
+export const useOneTaskView = () => useTaskStore((state) => state.isOneTask);
 export const useToggleOneTaskView = () =>
   useTaskStore((state) => state.toggleOneTaskView);

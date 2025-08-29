@@ -21,7 +21,7 @@ interface ITask {
 interface ITaskList {
   tasks: ITask[];
   newTask: ITask | null;
-  oneTask: boolean
+  isOneTask: boolean
 }
 
 interface ITaskState extends IActon, ITaskList {}
