@@ -1,11 +1,11 @@
-import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react';
+import { Button, CloseButton, Dialog, Portal, Box } from '@chakra-ui/react';
 import type { ITask } from '@/store/task/types';
 import { useDoneTask, useToggleOneTaskView } from '@/store/task/useTaskStore';
 import { toaster } from '../ui/toaster';
 
 interface DetailsTaskPorps {
   task?: ITask;
-  doneTask: (task: ITask) => void
+  doneTask: (task: ITask) => void;
 }
 
 export default function OneTask({
@@ -21,7 +21,7 @@ export default function OneTask({
   doneTask,
 }: DetailsTaskPorps) {
   const clickDoneTask = async () => {
-    doneTask(task)
+    doneTask(task);
   };
 
   const toggleOneTaskView = useToggleOneTaskView();
@@ -33,15 +33,29 @@ export default function OneTask({
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>{task.title}</Dialog.Title>
+              <Dialog.Title></Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body>{task.description}</Dialog.Body>
+            <Dialog.Body>
+              <Box
+                maxW="800px" 
+                w="90%"
+                mx="auto" 
+                py={4} 
+              >
+                <Box mb={4} fontWeight="bold" fontSize="xl">
+                  {task.title}
+                </Box>
+                <Box fontSize="md">
+                  {task.description}
+                </Box>
+              </Box>
+            </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
                 <Button
                   variant="outline"
                   onClick={clickDoneTask}
-                  colorPalette={'green'}
+                  colorPalette="green"
                 >
                   Готово
                 </Button>
