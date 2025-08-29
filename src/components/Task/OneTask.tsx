@@ -1,9 +1,11 @@
 import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react';
 import type { ITask } from '@/store/task/types';
 import { useDoneTask, useToggleOneTaskView } from '@/store/task/useTaskStore';
+import { toaster } from '../ui/toaster';
 
 interface DetailsTaskPorps {
   task?: ITask;
+  doneTask: (task: ITask) => void
 }
 
 export default function OneTask({
@@ -16,11 +18,10 @@ export default function OneTask({
     assigned_to_id: null,
     description: null,
   },
+  doneTask,
 }: DetailsTaskPorps) {
   const clickDoneTask = async () => {
-    if (task.id) {
-      useDoneTask(task.id);
-    }
+    doneTask(task)
   };
 
   const toggleOneTaskView = useToggleOneTaskView();

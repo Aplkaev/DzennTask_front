@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useUpdateTask, useCreateTask } from '@/store/task/useTaskStore';
 import type { ITask } from '@/store/task/types';
+import { toaster } from '../ui/toaster';
 
 interface DetailsTaskPorps {
   task?: ITask;

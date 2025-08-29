@@ -9,21 +9,17 @@ import { useState } from 'react';
 import type { ITask } from '@/store/task/types';
 interface TaskItemProps {
   task: ITask;
+  doneTask: (task:ITask)=>void
 }
 
-const TaskItem = ({ task }: TaskItemProps) => {
+const TaskItem = ({ task, doneTask }: TaskItemProps) => {
   const pathDatailsTask = '/project/tasks/' + task.id;
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const updateTask = async () => {
     if (!task.id) {
       return;
     }
-
-    if (task.status !== 'done') {
-      await useDoneTask(task.id);
-    } else {
-      await useUpdateTask(task.id, { ...task, status: 'new' });
-    }
+    doneTask(task)
   };
 
   const setDetails = () => {
@@ -60,7 +56,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
         </Button>
       </HStack>
       {isOpenDetails && (
-        <DetailsTask task={task} onClose={() => setDetails()} />
+        <DetailsTask task={task} onClose={() => setDetails()}/>
       )}
     </Box>
   );

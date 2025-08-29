@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useProject } from '@/store/project/useProjectStore';
-import { useTasks, fetchTasks, useCreateTask, useOneTaskView, useToggleOneTaskView } from '@/store/task/useTaskStore';
+import { useTasks, fetchTasks, useCreateTask, useOneTaskView, useToggleOneTaskView, useDoneTask, useUpdateTask } from '@/store/task/useTaskStore';
 import CreateTask from './CreateTask';
 import TaskItem from './TaskItem';
 import Topbar from '../Topbar/Topbar';
@@ -31,6 +31,7 @@ export default function TaskList() {
   const [maxPriorityTask, setMaxPriorityTask] = useState<ITask>();
   
   const isOpenOneTask = useOneTaskView();
+  const toggleOneTaskView = useToggleOneTaskView();
 
   const filterStatusTask = () => {
     if (statusFilter === 'new') {
@@ -41,6 +42,22 @@ export default function TaskList() {
       setStatusFilter('new');
     }
     loadTasks();
+  };
+
+    const doneTask = (task:ITask) => {
+      if (!task.id) {
+        return;
+      }
+      if (task.status !== 'done') {
+        toaster.create({
+          title: 'Задача выполнена!!!',
+          type: 'success',
+          duration: 5000,
+        });
+        useDoneTask(task.id);
+      } else {
+        useUpdateTask(task.id, { ...task, status: 'new' });
+      }
   };
 
   const loadTasks = async (text = '') => {
@@ -86,14 +103,22 @@ export default function TaskList() {
     const taskMaxPriority = [...tasks].sort(
       (a, b) => (b.priority ?? 0) - (a.priority ?? 0)
     ).find((task:ITask) => task.status === 'new');
-    
+    if(!taskMaxPriority) { 
+      toggleOneTaskView();
+      toaster.create({
+        title: 'Ехууу... Все задачи выполнены!!!',
+        type: 'success',
+        duration: 5000,
+      });
+      return;
+    }
     setMaxPriorityTask(taskMaxPriority);
   }, [tasks]);
 
   return (
     <Box p={4} appearance="light" className="task-view">
       {maxPriorityTask && isOpenOneTask && (
-        <OneTask task={maxPriorityTask} />
+        <OneTask task={maxPriorityTask} doneTask={doneTask}/>
       )}
       <Topbar
         onSearch={setTextFilter}
@@ -125,7 +150,7 @@ export default function TaskList() {
           {tasks.length === 0 ? (
             <EmptyTask />
           ) : (
-            tasks.map((task) => <TaskItem key={task.id} task={task} />)
+            tasks.map((task) => <TaskItem key={task.id} task={task} doneTask={doneTask}/>)
           )}
         </Stack>
       </Stack>
