@@ -43,14 +43,14 @@ const Sidebar = () => {
 
         <ProjectSidebar />
 
-        {bottomLevelRoutes.map((r) => (
-          <MenuSidebar key={r.path} menu={r} />
-        ))}
         <Button onClick={toggleOneTaskView}>Основная задача</Button>
         <ClientOnly fallback={<Skeleton w="10" h="10" rounded="md" />}>
           <ColorModeToggle />
         </ClientOnly>
         
+        {bottomLevelRoutes.map((r) => (
+          <MenuSidebar key={r.path} menu={r} />
+        ))}
       </VStack>
     </Box>
   );
