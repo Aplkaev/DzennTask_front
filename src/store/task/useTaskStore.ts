@@ -1,6 +1,6 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import type { ITaskList, ITask, ITaskState } from './types';
 import OneTask from '@/components/Task/OneTask';
 
@@ -88,8 +88,12 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     set({ isOneTask: !get().isOneTask });
   },
 });
-
-const useTaskStore = create<ITaskState>()(devtools(taskStore));
+const useTaskStore = create<ITaskState>()(
+  persist(devtools(taskStore, { name: 'TaskStore' }), {
+    name: 'task-store',
+    partialize: (state) => ({ isOneTask: state.isOneTask }),
+  })
+);
 
 export const useCreateTask = (task: ITask) =>
   useTaskStore.getState().create(task);
