@@ -2,6 +2,7 @@ import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
 import type { IAuthState, IUserLogin, IAuth } from './types';
+import type { IUser } from './types';
 const initialState: IAuth = {
   isAuthenticated: false,
   refreshToken: null,
@@ -79,7 +80,15 @@ export const useAuthStore = create<IAuthState>()(
   )
 );
 
-export const useUser = () => useAuthStore((state) => state.user);
+export const useUser = (): IUser => {
+  useAuthStore((state) => state.user);
+
+  const user = useAuthStore((state) => state.user);
+  if (!user) {
+    throw new Error('User not storate');
+  }
+  return user;
+};
 export const useIsAuthenticated = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useToken = () => useAuthStore((state) => state.token);

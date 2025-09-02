@@ -65,7 +65,15 @@ const useProjectStore = create<IProjectState>()(
 );
 
 export const useProjects = () => useProjectStore((state) => state.projects);
-export const useProject = () => useProjectStore((state) => state.selectProject);
+export const useProject = (): IProject => {
+  const project = useProjectStore((state) => state.selectProject);
+  if (!project) {
+    throw new Error(
+      'Project not selected'
+    );
+  }
+  return project;
+};
 export const fetchProjects = () => useProjectStore.getState().fetchProjects();
 export const createProject = (name: string) =>
   useProjectStore.getState().createProject(name);
