@@ -9,7 +9,7 @@ import { useState } from 'react';
 import type { ITask } from '@/store/task/types';
 interface TaskItemProps {
   task: ITask;
-  doneTask: (task:ITask)=>void
+  doneTask: (task: ITask) => void;
 }
 
 const TaskItem = ({ task, doneTask }: TaskItemProps) => {
@@ -19,7 +19,7 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
     if (!task.id) {
       return;
     }
-    doneTask(task)
+    doneTask(task);
   };
 
   const setDetails = () => {
@@ -46,17 +46,21 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
             {task.description}
           </Text>
         </Box>
-        <Button
-          size="sm"
-          variant="surface"
-          colorPalette={'red'}
-          onClick={() => useRemoveTask(task.id)}
-        >
-          Удалить
-        </Button>
+        {task.id !== null ? (
+          <Button
+            size="sm"
+            variant="surface"
+            colorPalette={'red'}
+            onClick={() => useRemoveTask(task.id)}
+          >
+            Удалить
+          </Button>
+        ) : (
+          ''
+        )}
       </HStack>
       {isOpenDetails && (
-        <DetailsTask task={task} onClose={() => setDetails()}/>
+        <DetailsTask task={task} onClose={() => setDetails()} />
       )}
     </Box>
   );

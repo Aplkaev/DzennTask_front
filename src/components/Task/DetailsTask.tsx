@@ -14,32 +14,49 @@ import { useState, useEffect } from 'react';
 import { useUpdateTask, useCreateTask } from '@/store/task/useTaskStore';
 import type { ITask } from '@/store/task/types';
 import { toaster } from '../ui/toaster';
+import { useUser } from '@/store/auth/useAuthStore';
+import { useProject } from '@/store/project/useProjectStore';
 
 interface DetailsTaskPorps {
-  task?: ITask;
-  onClose: () => void;
+  task?: ITask | null;
+  onClose?: () => void;
 }
 
-export default function DetailsTask({
-  task = {
-    id: null,
-    title: null,
-    status: null,
-    priority: null,
-    project_id: null,
-    assigned_to_id: null,
-    description: null,
-  },
-  onClose,
-}: DetailsTaskPorps) {
-  // дефолтные значения для новой задачи
-  const [localTask, setLocalTask] = useState<ITask>(task);
+const emptyTask: ITask = {
+  id: null,
+  title: '',
+  status: 'new',
+  priority: 1,
+  project_id: null,
+  assigned_to_id: null,
+  description: '',
+};
+
+export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
+  const user = useUser();
+  const project = useProject();
+
+  const newTask:ITask = {
+    ...emptyTask,
+    assigned_to_id: user?.user_id ?? '',
+    project_id: project?.id ?? '' 
+  }
+  
+  const [localTask, setLocalTask] = useState<ITask>(task ?? newTask);
 
   useEffect(() => {
-    setLocalTask(task);
+    setLocalTask(localTask);
   }, [task]);
 
   const update = async () => {
+    const _newTask:ITask = {
+      ...emptyTask,
+      assigned_to_id: user?.user_id ?? '',
+      project_id: project?.id ?? '' 
+    }
+    console.log('update', task, newTask, localTask);
+    // console.log('update', _newTask, newTask);
+    
     if (task?.id) {
       // обновление существующей
       await useUpdateTask(task.id, localTask);
@@ -65,7 +82,7 @@ export default function DetailsTask({
             <Dialog.Header>
               <Dialog.Title>
                 <Text fontWeight="bold" textStyle="3xl">
-                  Название
+                  {localTask.id ? 'Редактирование задачи' : 'Новая задача'}
                 </Text>
                 <Input
                   placeholder="Название"
@@ -78,7 +95,7 @@ export default function DetailsTask({
                     }))
                   }
                 />
-              </Dialog.Title >
+              </Dialog.Title>
               <Dialog.CloseTrigger asChild>
                 <CloseButton size="sm" onClick={onClose} />
               </Dialog.CloseTrigger>
@@ -107,7 +124,7 @@ export default function DetailsTask({
                 <Textarea
                   variant="flushed"
                   placeholder="Описание"
-                  value={task.description}
+                  value={localTask.description}
                   onChange={(e) =>
                     setLocalTask((prev) => ({
                       ...prev,

@@ -1,19 +1,28 @@
-import { VStack, Text } from '@chakra-ui/react';
-export default function EmptyTask({ message = 'Задач пока нет' }) {
+// import { VStack, Text } from '@chakra-ui/react';
+import { Button, ButtonGroup, EmptyState, VStack } from "@chakra-ui/react"
+import { HiColorSwatch } from "react-icons/hi"
+import DetailsTask from "./DetailsTask"
+
+interface EmptyTaskProps {
+  title: string,
+  buttonCreateTitle: string,
+  clickCreate: () => void
+}
+
+export default function EmptyTask({ title='Задач нет', buttonCreateTitle= 'Создать задачу', clickCreate }: EmptyTaskProps) {
   return (
-    <VStack
-      w="100%"
-      h="200px"
-      align="center"
-      justify="center"
-      spacing={4}
-      border="2px dashed"
-      borderColor="gray.200"
-      borderRadius="xl"
-    >
-      <Text fontSize="lg" color="gray.500" fontWeight="medium">
-        {message}
-      </Text>
-    </VStack>
+    <EmptyState.Root>
+      <EmptyState.Content>
+        <EmptyState.Indicator>
+          <HiColorSwatch />
+        </EmptyState.Indicator>
+        <VStack textAlign="center">
+          <EmptyState.Title>{title}</EmptyState.Title>
+        </VStack>
+        <ButtonGroup>
+          <Button onClick={clickCreate}>{buttonCreateTitle}</Button>
+        </ButtonGroup>
+      </EmptyState.Content>
+    </EmptyState.Root>
   );
 }

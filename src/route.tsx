@@ -49,6 +49,7 @@ export const route: AppRoute[] = [
         path: 'project/:uuid',
         element: <Task />,
       },
+      // создать новый таску
       {
         path: 'project/tasks/new',
         element: <DatilsTask />,

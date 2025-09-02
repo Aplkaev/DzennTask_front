@@ -1,9 +1,7 @@
 import { Box, Flex, ClientOnly, Skeleton } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './SideBar';
-import Topbar from './Topbar/Topbar';
 import ProtectedRoute from '@/containers/auth/ProtectedRoute';
-import { ColorModeToggle } from './color-mode-toggle';
 
 export default function HomePage() {
   return (
