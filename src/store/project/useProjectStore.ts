@@ -2,6 +2,8 @@ import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
 import type { IProject, IProjectList, IProjectState } from './types';
+import { apolloClient } from '@/shared/api/apolloClients';
+import { gql } from '@apollo/client';
 
 const initialState: IProjectList = {
   projects: [],
@@ -19,8 +21,26 @@ const projectStore: StateCreator<
     });
   },
   fetchProjects: async () => {
-    const { data } = await api.get('/project');
-    set({ projects: data.items || [] });
+    const { data } = await apolloClient.query({
+      query: gql`
+        query {
+          projects{
+            edges{
+              node{
+                id,
+                name,
+                tag,
+                description
+              }
+            }
+          }
+        }
+      `
+    });  
+    
+    set({ 
+      projects: data.projects?.edges?.map((edge: any) => edge.node) || [] 
+    });
   },
   clearProjects: async () => {
     set({ projects: [] });
@@ -66,12 +86,12 @@ const useProjectStore = create<IProjectState>()(
 
 export const useProjects = () => useProjectStore((state) => state.projects);
 export const useProject = (): IProject => {
-  const project = useProjectStore((state) => state.selectProject);
-  if (!project) {
-    throw new Error(
-      'Project not selected'
-    );
-  }
+  const project = useProjectStore((state) => state.selectProject);  
+  // if (!project) {
+  //   throw new Error(
+  //     'Project not selected'
+  //   );
+  // }
   return project;
 };
 export const fetchProjects = () => useProjectStore.getState().fetchProjects();
@@ -79,5 +99,5 @@ export const createProject = (name: string) =>
   useProjectStore.getState().createProject(name);
 export const removeProject = (id: string) =>
   useProjectStore.getState().removeProject(id);
-export const seletedProject = (id: string) =>
+export const selectedProject = (id: string) =>
   useProjectStore.getState().selectedProject(id);

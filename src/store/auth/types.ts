@@ -9,6 +9,7 @@ interface IAction {
   logout: () => void;
   register: (user: IUserLogin) => void;
   getMe: () => void;
+  geetUsers: () => void;
 }
 interface IUser {
   user_id: string;

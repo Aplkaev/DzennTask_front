@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
   useProjects,
   fetchProjects,
-  seletedProject,
+  selectedProject,
   useProject,
 } from '@/store/project/useProjectStore';
 import { Box, VStack, Link } from '@chakra-ui/react';

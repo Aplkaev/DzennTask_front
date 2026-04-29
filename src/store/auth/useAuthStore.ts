@@ -1,5 +1,7 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
+import {  apolloClient } from '@/shared/api/apolloClients';
+import { gql } from '@apollo/client';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
 import type { IAuthState, IUserLogin, IAuth } from './types';
 import type { IUser } from './types';
@@ -15,6 +17,22 @@ const authStore: StateCreator<
   [['zustand/devtools', never], ['zustand/persist', unknown]]
 > = (set, get) => ({
   ...initialState,
+  geetUsers: async () => {
+    const { data } = await apolloClient.query({
+      query: gql`
+        query {
+          users {
+            edges {
+              node {
+                id
+                email
+              }
+            }
+          }
+        }
+      `
+    });    
+  },
   getMe: async () => {
     const { data } = await api.get('/users/me');
     set({
@@ -24,6 +42,8 @@ const authStore: StateCreator<
         avatar_url: data.avatar_url,
       },
     });
+
+    get().geetUsers();
   },
   login: async (user: IUserLogin) => {
     // try {
@@ -52,7 +72,7 @@ const authStore: StateCreator<
     ),
   register: async (user: IUserLogin) => {
     try {
-      const response = await api.post('/user/register', {
+      const response = await api.post('/users/register', {
         email: user.email,
         password: user.password,
       });

@@ -1,6 +1,6 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, Flex, Text, Icon } from '@chakra-ui/react';
-import { useProject, seletedProject } from '@/store/project/useProjectStore';
+import { useProject, selectedProject } from '@/store/project/useProjectStore';
 import type { IProject } from '@/store/project/types';
 
 interface ProjectSidebarItemProps {
@@ -11,12 +11,13 @@ const ProjectSidebarItem = ({ project }: ProjectSidebarItemProps) => {
   const currentProject = useProject();
 
   const isActive = currentProject?.id === project.id;
-
+  const projectId = project.id.split('/').slice(-1)[0];
+  
   return (
     <Button
       as={RouterLink}
-      to={`/project/${project.id}`}
-      onClick={() => seletedProject(project.id)}
+      to={`/project/${projectId}`}
+      onClick={() => selectedProject(project.id)}
       justifyContent="space-between"
       // variant={isActive ? 'solid' : 'ghost'}
       w="100%"

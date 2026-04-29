@@ -3,7 +3,7 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { useForm } from 'react-hook-form';
 import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { login } from '@/store/auth/useAuthStore';
+import { login, useIsAuthenticated } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
 
 interface FormValues {
@@ -14,6 +14,10 @@ interface FormValues {
 export default function LoginForm() {
   const navigate = useNavigate();
   const project = useProject();
+  if(useIsAuthenticated()) {  
+    navigate('/');
+  }
+  
 
   const {
     register,

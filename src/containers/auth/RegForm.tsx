@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { register } from '@/store/auth/useAuthStore';
+import { register as registerUser } from '@/store/auth/useAuthStore';
 
 const registerSchema = z
   .object({
@@ -34,14 +34,16 @@ export default function RegForm() {
   const onSubmit = handleSubmit(async (data) => {
     console.log('onSubmit call', data);
     try {
+
+      await registerUser({
+        email: data.email,
+        password: data.password,
+      });
+      
       toaster.create({
         title: 'Регистрация успешна',
         type: 'success',
         duration: 5000,
-      });
-      await register({
-        email: data.email,
-        password: data.password,
       });
 
       navigate('/login');

@@ -15,7 +15,7 @@ export function useTaskList(project?: IProject, user?: IUser) {
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [maxPriorityTask, setMaxPriorityTask] = useState<ITask>();
 
-  const loadTasks = async (text = '') => {
+  const loadTasks = async (text = '') => {    
     if (!project?.id) return;
 
     try {
