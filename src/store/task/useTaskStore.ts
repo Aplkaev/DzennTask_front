@@ -4,7 +4,9 @@ import { devtools, persist } from 'zustand/middleware';
 import type { ITaskList, ITask, ITaskState } from './types';
 import OneTask from '@/components/Task/OneTask';
 import { apolloClient } from '@/shared/api/apolloClients';
-import { gql } from '@apollo/client';
+import { gql} from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
+import { CreateTaskDocument, TaskStatusEnum, TasksDocument } from '@/generated/graphql';
 
 const initialState: ITaskList = {
   tasks: [],
@@ -12,41 +14,26 @@ const initialState: ITaskList = {
   isOneTask: true,
 };
 
-const mapTaskInput = (task: ITask) => ({
-  title: task.title,
-  descrition: task.description,
-  priority: task.priority,
-  status: mapTaskStatus(task.status),
-  project: task.project_id,
-});
-const mapTaskStatus = (status: string | null) => {
-  switch (status) {
-    case 'new':
-      return 'NEW';
+// const mapTaskStatus = (status: string | null): TaskStatusEnum => {
+//   switch (status) {
+//     case 'done':
+//       return TaskStatusEnum.Done;
 
-    case 'done':
-      return 'DONE';
+//     case 'new':
+//     default:
+//       return TaskStatusEnum.New;
+//   }
+// };
 
-    default:
-      return null;
-  }
-};
-export const CREATE_TASK_MUTATION = gql`
-  mutation CreateTask($input: createTaskInput!) {
-    createTask(input: $input) {
-      task {
-        id
-        title
-        status
-        priority
-        descrition
-        project {
-          id
-        }
-      }
-    }
-  }
-`;
+// const mapTaskInput = (task: ITask) => ({
+//   title: task.title ?? '',
+//   descrition: task.description ?? '',
+//   priority: task.priority ?? 1,
+
+//   status: mapTaskStatus(task.status),
+
+//   project: task.project_id,
+// });
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
   set,
@@ -54,25 +41,33 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 ) => ({
   ...initialState,
   create: async (task: ITask) => {
-    const input = mapTaskInput(task);
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: CreateTaskDocument,
 
-    const { data } = await apolloClient.mutate({
-      mutation: CREATE_TASK_MUTATION,
-      variables: {
-        input,
-      },
-    });
+        variables: {
+          input: task.mapInput(),
+        },
+      });
 
-    const newTask = data.createTask.task;
+      const newTask = data?.createTask?.task;
 
-    set({
-      newTask,
-      tasks: [newTask, ...get().tasks],
-    });
+      if (!newTask) {
+        return null;
+      }
 
-    // set({ newTask: data });
+      set({
+        newTask,
 
-    // set({ tasks: [data, ...currentTasks] });
+        tasks: [newTask, ...get().tasks],
+      });
+
+      return newTask;
+    } catch (error) {
+      console.error('Create task error', error);
+
+      throw error;
+    }
   },
   getImportant: async (id: string) => {
     const { data } = await api.get(`/tasks/project/${id}`);
@@ -80,7 +75,8 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     set({ tasks: data.items || [] });
   },
   done: async (id: string) => {
-    api.put(`/tasks/${id}/done`);
+    const taskID = id.split('/').slice(-1)[0];
+    api.put(`/tasks/${taskID}/done`);
     set((state) => ({
       tasks: state.tasks.map((task) =>
         task.id === id ? { ...task, status: 'done' } : task
@@ -88,7 +84,9 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     }));
   },
   update: async (id: string, updatedTask: ITask) => {
-    api.put(`/tasks/${id}`, updatedTask);
+    const taskID = id.split('/').slice(-1)[0];
+
+    api.put(`/tasks/${taskID}`, updatedTask);
 
     const currentTasks = get().tasks;
 
@@ -108,7 +106,8 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     get().update(task.id, task);
   },
   remove: async (id: string) => {
-    api.delete(`/tasks/${id}`);
+      const taskID = id.split('/').slice(-1)[0];
+    api.delete(`/tasks/${taskID}`);
 
     const currentProjects = get().tasks;
 
@@ -122,42 +121,15 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     text?: string
   ) => {    
     const { data } = await apolloClient.query({
-      query: gql`
-        query {
-          tasks(project: "${id}") {
-            edges {
-              node {
-                id
-                title
-                descrition
-                status
-                priority
-                project {
-                  id
-                }
-              }
-            }
-          }
-        }
-      `
-    });      
-    set({ 
-      tasks: data.tasks?.edges?.map((edge: any) => edge.node) || [] 
+      query: TasksDocument,
+      variables: {
+        project: `${id}`,
+      },
     });
-    
 
-    // const params = new URLSearchParams(filter as Record<string, string>);
-
-    // if (text) {
-    //   params.set('text', text);
-    // }
-    // const url = params
-    //   ? `/tasks/project/${id}?${params.toString()}`
-    //   : `/tasks/project/${id}`;
-
-    // const { data } = await api.get(url);
-
-    // set({ tasks: data.items || [] });
+    set({
+      tasks: data.tasks?.edges?.map((edge) => edge?.node) ?? [],
+    });
   },
   toggleOneTaskView: () => {
     set({ isOneTask: !get().isOneTask });

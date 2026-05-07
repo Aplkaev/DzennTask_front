@@ -5,6 +5,7 @@ import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login, useIsAuthenticated } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
+import { useEffect } from 'react';
 
 interface FormValues {
   username: string;
@@ -25,6 +26,14 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm<FormValues>();
 
+  const isAuth = useIsAuthenticated();
+
+  useEffect(() => {
+    if (isAuth) {
+      navigate('/');
+    }
+  }, [isAuth]);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login({
@@ -36,19 +45,14 @@ export default function LoginForm() {
         type: 'success',
         duration: 5000,
       });
-      if (project) {
-        navigate(`/project/${project.id}`);
-      } else {
-        navigate('/');
-      }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
 
       toaster.create({
         description:
           error instanceof Error ? error.message : 'Неизвестная ошибка',
         title: 'Ошибка авторизации',
-        type: 'error',
+        type: 'error',  
         duration: 5000,
       });
     }
@@ -61,7 +65,11 @@ export default function LoginForm() {
       alignItems="center"
       justifyContent="center"
       as="form"
-      onSubmit={onSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSubmit(e);
+      }}     
       px={4}
     >
       <Stack spacing={6}>
