@@ -1,0 +1,17 @@
+mutation CreateTask($input: createTaskInput!) { createTask(input: $input) { task { id title status } } }
+query Tasks($project: String!) {
+  tasks(project: $project) {
+    edges {
+      node {
+        id
+        title
+        descrition
+        status
+        priority
+        project {
+          id
+        }
+      }
+    }
+  }
+}

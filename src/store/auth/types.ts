@@ -1,19 +1,16 @@
+import { IUser } from "../../Entity/User/types";
 
-interface IUserLogin {
+interface ILoginInput {
   email: string;
   password: string;
 }
 
 interface IAction {
-  login: (user: IUserLogin) => void;
+  login: (user: ILoginInput) => void;
   logout: () => void;
-  register: (user: IUserLogin) => void;
+  register: (user: ILoginInput) => void;
   getMe: () => void;
-}
-interface IUser {
-  user_id: string;
-  email: string;
-  avatar_url: string | null;
+  geetUsers: () => void;
 }
 
 interface IAuth {
@@ -25,4 +22,4 @@ interface IAuth {
 
 interface IAuthState extends IAction, IAuth {}
 
-export type { IAuthState, IAuth, IUser, IAction, IUserLogin }
+export type { IAuthState, IAuth, IAction, ILoginInput, IUser }

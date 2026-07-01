@@ -6,7 +6,7 @@ type Props = {
   children: ReactNode;
 };
 
-const ProtectedRoute = ({ children }: Props) => {
+const ProtectedRoute = ({ children }: Props) => {  
   return useIsAuthenticated() ? (
     <>{children}</>
   ) : (

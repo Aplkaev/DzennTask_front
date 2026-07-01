@@ -3,8 +3,9 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { useForm } from 'react-hook-form';
 import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { login } from '@/store/auth/useAuthStore';
+import { login, useIsAuthenticated } from '@/store/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
+import { useEffect } from 'react';
 
 interface FormValues {
   username: string;
@@ -14,12 +15,24 @@ interface FormValues {
 export default function LoginForm() {
   const navigate = useNavigate();
   const project = useProject();
+  if(useIsAuthenticated()) {  
+    navigate('/');
+  }
+  
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
+
+  const isAuth = useIsAuthenticated();
+
+  useEffect(() => {
+    if (isAuth) {
+      navigate('/');
+    }
+  }, [isAuth]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -32,19 +45,14 @@ export default function LoginForm() {
         type: 'success',
         duration: 5000,
       });
-      if (project) {
-        navigate(`/project/${project.id}`);
-      } else {
-        navigate('/');
-      }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
 
       toaster.create({
         description:
           error instanceof Error ? error.message : 'Неизвестная ошибка',
         title: 'Ошибка авторизации',
-        type: 'error',
+        type: 'error',  
         duration: 5000,
       });
     }
@@ -57,7 +65,11 @@ export default function LoginForm() {
       alignItems="center"
       justifyContent="center"
       as="form"
-      onSubmit={onSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSubmit(e);
+      }}     
       px={4}
     >
       <Stack spacing={6}>

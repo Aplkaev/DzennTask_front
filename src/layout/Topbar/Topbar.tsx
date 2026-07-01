@@ -24,8 +24,6 @@ export default function Topbar({
   
   return (
     <Box p={4}>
-      {/* <Sidebar></Sidebar>
-      <AvatarUser></AvatarUser> */}
       <Input
         placeholder="Поиск..."
         onChange={(e) => onSearch(e.target.value)}

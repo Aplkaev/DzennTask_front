@@ -1,8 +1,10 @@
 import { create, type StateCreator } from 'zustand';
 import { api } from '@/shared/api/apiClient';
+import {  apolloClient } from '@/shared/api/apolloClients';
+import { gql } from '@apollo/client';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
-import type { IAuthState, IUserLogin, IAuth } from './types';
-import type { IUser } from './types';
+import type { IAuthState, ILoginInput, IAuth, IUser } from './types';
+
 const initialState: IAuth = {
   isAuthenticated: false,
   refreshToken: null,
@@ -15,6 +17,22 @@ const authStore: StateCreator<
   [['zustand/devtools', never], ['zustand/persist', unknown]]
 > = (set, get) => ({
   ...initialState,
+  geetUsers: async () => {
+    const { data } = await apolloClient.query({
+      query: gql`
+        query {
+          users {
+            edges {
+              node {
+                id
+                email
+              }
+            }
+          }
+        }
+      `
+    });    
+  },
   getMe: async () => {
     const { data } = await api.get('/users/me');
     set({
@@ -24,8 +42,10 @@ const authStore: StateCreator<
         avatar_url: data.avatar_url,
       },
     });
+
+    get().geetUsers();
   },
-  login: async (user: IUserLogin) => {
+  login: async (user: ILoginInput) => {
     // try {
     const { data } = await api.post('/login', {
       username: user.email,
@@ -50,9 +70,9 @@ const authStore: StateCreator<
       false,
       'auth_store_register'
     ),
-  register: async (user: IUserLogin) => {
+  register: async (user: ILoginInput) => {
     try {
-      const response = await api.post('/user/register', {
+      const response = await api.post('/users/register', {
         email: user.email,
         password: user.password,
       });
@@ -85,14 +105,14 @@ export const useUser = (): IUser => {
 
   const user = useAuthStore((state) => state.user);
   if (!user) {
-    throw new Error('User not storate');
+    throw new Error('User not stored');
   }
   return user;
 };
 export const useIsAuthenticated = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useToken = () => useAuthStore((state) => state.token);
-export const login = (user: IUserLogin) => useAuthStore.getState().login(user);
+export const login = (user: ILoginInput) => useAuthStore.getState().login(user);
 export const logout = () => useAuthStore.getState().logout();
-export const register = (user: IUserLogin) =>
+export const register = (user: ILoginInput) =>
   useAuthStore.getState().register(user);
