@@ -1,9 +1,9 @@
 import { Box, VStack, ClientOnly, Skeleton, Button } from '@chakra-ui/react';
 import { route, type AppRoute } from '@/route';
-import ProjectSidebar from './Sidebar/ProjectSidebar';
+import ProjectSidebar from './ProjectSidebar';
 import './style.css';
-import MenuSidebar from './Sidebar/MenuSidebar';
-import { ColorModeToggle } from './color-mode-toggle';
+import MenuSidebar from './MenuSidebar';
+import { ColorModeToggle } from '../../components/color-mode-toggle';
 import { useToggleOneTaskView } from '@/store/task/useTaskStore';
 
 const Sidebar = () => {

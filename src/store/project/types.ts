@@ -1,4 +1,4 @@
-
+import { IProject, IProjectList } from "../../Entity/Project/types";
 interface IActon {
   createProject: (name: string) => void;
   fetchProjects: () => void;
@@ -6,18 +6,6 @@ interface IActon {
   removeProject: (id: string) => void;
   editProject: (id: string) => void;
   selectedProject: (id: string) => void;
-}
-
-interface IProject {
-  id: string;
-  name: string;
-  tag: string | null;
-  description: string | null;
-}
-
-interface IProjectList {
-  projects: IProject[];
-  selectProject: IProject | null;
 }
 
 interface IProjectState extends IActon, IProjectList {}

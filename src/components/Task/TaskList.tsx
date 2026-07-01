@@ -1,7 +1,7 @@
 import { Box, Stack } from '@chakra-ui/react';
 import { useProject } from '@/store/project/useProjectStore';
 import { useUser } from '@/store/auth/useAuthStore';
-import Topbar from '../Topbar/Topbar';
+import Topbar from '../../layout/Topbar/Topbar';
 import CreateTask from './CreateTask';
 import TaskItem from './TaskItem';
 import OneTask from './OneTask';

@@ -1,7 +1,7 @@
 import { Avatar, HStack } from '@chakra-ui/react';
 import { useUser } from '@/store/auth/useAuthStore';
 
-export default function AvatarUser() {
+export default function Avater() {
 	const email = useUser()?.email
   return (
     <HStack gap="4">

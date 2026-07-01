@@ -1,8 +1,8 @@
-import LoginForm from './containers/auth/LoginForm';
-import RegForm from './containers/auth/RegForm';
-import HomePage from './components/HomePages';
+import LoginForm from './components/Login/LoginForm';
+import RegForm from './components/Login/RegForm';
+import Page from './layout/Home/Pages';
 import NewProject from './components/Project/NewProject';
-import Logout from './containers/auth/Logout';
+import Logout from './components/Login/Logout';
 import Task from './components/Task/TaskList';
 import DatilsTask from './components/Task/DetailsTask';
 import type { ReactNode } from 'react';
@@ -36,7 +36,7 @@ export const route: AppRoute[] = [
     path: '/',
     label: 'Главная',
     hidden: true,
-    element: <HomePage />,
+    element: <Page />,
     top: true,
     children: [
       {
