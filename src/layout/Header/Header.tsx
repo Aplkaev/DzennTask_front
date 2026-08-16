@@ -1,9 +1,9 @@
-import { Avatar, Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useUser } from "@/store/auth/useAuthStore";
+import UserAvatar from "@/components/User/UserAvatar";
 
 export default function Header() {
   const email = useUser()?.email;
-
   return (
     <Box
       position="fixed"
@@ -11,12 +11,7 @@ export default function Header() {
       right={2}
       zIndex="overlay"
     >
-      <Avatar.Root
-        size="lg"
-        cursor="pointer"
-      >
-        <Avatar.Fallback name={email} />
-      </Avatar.Root>
+      <UserAvatar />
     </Box>
   );
 }
