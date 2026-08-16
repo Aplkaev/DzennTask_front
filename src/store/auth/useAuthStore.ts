@@ -17,7 +17,7 @@ const authStore: StateCreator<
   [['zustand/devtools', never], ['zustand/persist', unknown]]
 > = (set, get) => ({
   ...initialState,
-  geetUsers: async () => {
+  getUsers: async () => {
     const { data } = await apolloClient.query({
       query: gql`
         query {
@@ -34,29 +34,64 @@ const authStore: StateCreator<
     });    
   },
   getMe: async () => {
-    const { data } = await api.get('/users/me');
-    set({
-      user: {
-        user_id: data.id,
-        email: data.email,
-        avatar_url: data.avatar_url,
-      },
+    const { data } = await apolloClient.query<{
+      meUser: {
+        id: string;
+        email: string;
+        telegram: string | null;
+        phone: string | null;
+        timezone: string | null;
+      };
+    }>({
+      query: gql`
+        query {
+          meUser {
+              id
+              email
+              telegram
+              phone
+              timezone
+          }
+      }
+      `
     });
 
-    get().geetUsers();
+    if (!data) return;
+
+    set({
+      user: {
+        user_id: data.meUser.id,
+        email: data.meUser.email,
+        avatar_url: null,
+        telegram: data.meUser.telegram,
+        phone: data.meUser.phone,
+        timezone: data.meUser.timezone,
+      },
+    }, false, 'auth_store_get_me');
   },
-  login: async (user: ILoginInput) => {
+  login: async (loginInput: ILoginInput) => {
     // try {
     const { data } = await api.post('/login', {
-      username: user.email,
-      password: user.password,
+      username: loginInput.email,
+      password: loginInput.password,
     });
 
     const { token } = data;
+    const { user } = data;
 
     set({ token: token, isAuthenticated: true }, false, 'auth_store_login');
+    // set({
+    //   user: {
+    //     user_id: user.id,
+    //     email: user.email,
+    //     avatar_url: user.avatar_url,
+    //     telegram: user.telegram,
+    //     phone: user.phone,
+    //     timezone: user.timezone,
+    //   },
+    // }, false, 'auth_store_login_user');
 
-    get().getMe();
+    // get().getMe();
 
     // } catch (error) {
 
@@ -89,6 +124,9 @@ const authStore: StateCreator<
       useAuthStore.getState().logout();
     }
   },
+  requestUser: async (user: IUser) => {
+    await api.post('/users/request', user)
+  }
 });
 
 export const useAuthStore = create<IAuthState>()(
@@ -116,3 +154,5 @@ export const login = (user: ILoginInput) => useAuthStore.getState().login(user);
 export const logout = () => useAuthStore.getState().logout();
 export const register = (user: ILoginInput) =>
   useAuthStore.getState().register(user);
+export const requestUser = (user: IUser) => useAuthStore.getState().requestUser(user);
+export const getMe = () => useAuthStore.getState().getMe();
