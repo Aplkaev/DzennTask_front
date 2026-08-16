@@ -7,6 +7,7 @@ import {
 import DetailsTask from './DetailsTask';
 import { useState } from 'react';
 import type { ITask } from '@/store/task/types';
+
 interface TaskItemProps {
   task: ITask;
   doneTask: (task: ITask) => void;
@@ -31,19 +32,20 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
       <HStack key={task.id}>
         <Stack align="flex-start">
           <Checkbox.Root
-            checked={task.status === 'done'}
-            onCheckedChange={() => updateTask()}
+            checked={task.status === 'DONE'}
           >
             <Checkbox.HiddenInput />
-            <Checkbox.Control onClick={() => updateTask()}>
+            <Checkbox.Control
+              onClick={updateTask}
+            >
               <Checkbox.Indicator />
             </Checkbox.Control>
-            <Checkbox.Label onClick={setDetails}>{task.title}</Checkbox.Label>
+            <Checkbox.Label>{task.title}</Checkbox.Label>
           </Checkbox.Root>
         </Stack>
         <Box flex="1" onClick={setDetails} cursor="pointer" width={'100px'}>
           <Text truncate fontSize="sm" color="gray.400">
-            {task.description}
+            {task.description} {task.title}
           </Text>
         </Box>
         {task.id !== null ? (

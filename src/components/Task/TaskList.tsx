@@ -31,8 +31,8 @@ export default function TaskList() {
 
   return tasks.length > 0 ? (
     <Box p={4} className="task-view">
-      {maxPriorityTask && <OneTask task={maxPriorityTask} doneTask={doneTask} />}
-
+      {/* {maxPriorityTask && <OneTask task={maxPriorityTask} doneTask={doneTask} />} */}
+      {/* кнопка для продолжения работы с задачей, которая имеет наивысший приоритет */}
       <Topbar
         onSearch={setTextFilter}
         onSubmitSearch={() => loadTasks(textFilter)}

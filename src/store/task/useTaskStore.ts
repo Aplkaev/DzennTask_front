@@ -24,6 +24,15 @@ const mapTaskStatus = (status: string | null): TaskStatusEnum => {
   }
 };
 
+const mapTaskInput = (task: ITask) => ({
+  title: task.title ?? '',
+  descrition: task.description ?? undefined,
+  status: mapTaskStatus(task.status),
+  priority: task.priority ?? 1,
+  project: task.project_id ?? undefined,
+  assgned_to: task.assigned_to_id ?? undefined,
+});
+
 const UPDATE_TASK_MUTATION = gql`
   mutation UpdateTask($input: updateTaskInput!) {
     updateTask(input: $input) {
@@ -55,11 +64,12 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
   ...initialState,
   create: async (task: ITask) => {
     try {
+      console.log('Create task', task, mapTaskInput(task));
       const { data } = await apolloClient.mutate({
         mutation: CreateTaskDocument,
 
         variables: {
-          input: task.mapInput(),
+          input: mapTaskInput(task),
         },
       });
 

@@ -54,7 +54,7 @@ export function useTaskList(project?: IProject, user?: IUser) {
     if (!task.id) return;
 
     if (task.status !== 'done') {
-      toaster.create({ title: 'Задача выполнена!', type: 'success', duration: 5000 });
+      toaster.create({ title: 'Задача выполнена!', type: 'success', duration: 1500 });
       useDoneTask(task.id);
     } else {
       useUpdateTask(task.id, { ...task, status: 'new' });
