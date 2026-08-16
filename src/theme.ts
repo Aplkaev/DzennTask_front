@@ -10,12 +10,12 @@ const config = defineConfig({
     },
     tokens: {
       colors: {
-        red: '#EE0F0F',
+        dangerRed: { value: '#EE0F0F' },
       },
     },
     semanticTokens: {
       colors: {
-        danger: { value: '{colors.red}' },
+        danger: { value: '{colors.dangerRed}' },
       },
     },
     keyframes: {

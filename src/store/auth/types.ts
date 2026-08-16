@@ -10,7 +10,8 @@ interface IAction {
   logout: () => void;
   register: (user: ILoginInput) => void;
   getMe: () => void;
-  geetUsers: () => void;
+  getUsers: () => void;
+  requestUser: (user: IUser) => void;
 }
 
 interface IAuth {
