@@ -72,10 +72,14 @@ export type KanbanColumn = Node & {
 export type KanbanColumnTasksArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   project?: InputMaybe<Scalars['String']['input']>;
   project_list?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  status_list?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Cursor connection for KanbanColumn. */
@@ -110,36 +114,36 @@ export type Mutation = {
   createKanbanColumn?: Maybe<CreateKanbanColumnPayload>;
   /** Creates a Notification. */
   createNotification?: Maybe<CreateNotificationPayload>;
+  /** Creates a Project. */
+  createProject?: Maybe<CreateProjectPayload>;
   /** Creates a ProjectUser. */
   createProjectUser?: Maybe<CreateProjectUserPayload>;
   /** Creates a Task. */
   createTask?: Maybe<CreateTaskPayload>;
-  /** Creates a User. */
-  createUser?: Maybe<CreateUserPayload>;
   /** Deletes a Comment. */
   deleteComment?: Maybe<DeleteCommentPayload>;
   /** Deletes a KanbanColumn. */
   deleteKanbanColumn?: Maybe<DeleteKanbanColumnPayload>;
   /** Deletes a Notification. */
   deleteNotification?: Maybe<DeleteNotificationPayload>;
+  /** Deletes a Project. */
+  deleteProject?: Maybe<DeleteProjectPayload>;
   /** Deletes a ProjectUser. */
   deleteProjectUser?: Maybe<DeleteProjectUserPayload>;
   /** Deletes a Task. */
   deleteTask?: Maybe<DeleteTaskPayload>;
-  /** Deletes a User. */
-  deleteUser?: Maybe<DeleteUserPayload>;
   /** Updates a Comment. */
   updateComment?: Maybe<UpdateCommentPayload>;
   /** Updates a KanbanColumn. */
   updateKanbanColumn?: Maybe<UpdateKanbanColumnPayload>;
   /** Updates a Notification. */
   updateNotification?: Maybe<UpdateNotificationPayload>;
+  /** Updates a Project. */
+  updateProject?: Maybe<UpdateProjectPayload>;
   /** Updates a ProjectUser. */
   updateProjectUser?: Maybe<UpdateProjectUserPayload>;
   /** Updates a Task. */
   updateTask?: Maybe<UpdateTaskPayload>;
-  /** Updates a User. */
-  updateUser?: Maybe<UpdateUserPayload>;
 };
 
 
@@ -158,6 +162,11 @@ export type MutationCreateNotificationArgs = {
 };
 
 
+export type MutationCreateProjectArgs = {
+  input: CreateProjectInput;
+};
+
+
 export type MutationCreateProjectUserArgs = {
   input: CreateProjectUserInput;
 };
@@ -165,11 +174,6 @@ export type MutationCreateProjectUserArgs = {
 
 export type MutationCreateTaskArgs = {
   input: CreateTaskInput;
-};
-
-
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
 };
 
 
@@ -188,6 +192,11 @@ export type MutationDeleteNotificationArgs = {
 };
 
 
+export type MutationDeleteProjectArgs = {
+  input: DeleteProjectInput;
+};
+
+
 export type MutationDeleteProjectUserArgs = {
   input: DeleteProjectUserInput;
 };
@@ -195,11 +204,6 @@ export type MutationDeleteProjectUserArgs = {
 
 export type MutationDeleteTaskArgs = {
   input: DeleteTaskInput;
-};
-
-
-export type MutationDeleteUserArgs = {
-  input: DeleteUserInput;
 };
 
 
@@ -218,6 +222,11 @@ export type MutationUpdateNotificationArgs = {
 };
 
 
+export type MutationUpdateProjectArgs = {
+  input: UpdateProjectInput;
+};
+
+
 export type MutationUpdateProjectUserArgs = {
   input: UpdateProjectUserInput;
 };
@@ -225,11 +234,6 @@ export type MutationUpdateProjectUserArgs = {
 
 export type MutationUpdateTaskArgs = {
   input: UpdateTaskInput;
-};
-
-
-export type MutationUpdateUserArgs = {
-  input: UpdateUserInput;
 };
 
 /** A node, according to the Relay specification. */
@@ -362,6 +366,7 @@ export type Query = {
   comments?: Maybe<CommentCursorConnection>;
   kanbanColumn?: Maybe<KanbanColumn>;
   kanbanColumns?: Maybe<KanbanColumnCursorConnection>;
+  meUser?: Maybe<User>;
   node?: Maybe<Node>;
   notification?: Maybe<Notification>;
   notifications?: Maybe<NotificationCursorConnection>;
@@ -372,7 +377,6 @@ export type Query = {
   task?: Maybe<Task>;
   tasks?: Maybe<TaskCursorConnection>;
   user?: Maybe<User>;
-  users?: Maybe<UserCursorConnection>;
 };
 
 
@@ -454,23 +458,19 @@ export type QueryTaskArgs = {
 export type QueryTasksArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   project?: InputMaybe<Scalars['String']['input']>;
   project_list?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  status_list?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type QueryUsersArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export enum RoleEnum {
@@ -482,7 +482,7 @@ export type Task = Node & {
   assgned_to?: Maybe<User>;
   comments?: Maybe<CommentCursorConnection>;
   deadline?: Maybe<Scalars['String']['output']>;
-  descrition?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   kanban_column?: Maybe<KanbanColumn>;
   parent?: Maybe<Task>;
@@ -539,9 +539,11 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   notifications?: Maybe<NotificationCursorConnection>;
   password: Scalars['String']['output'];
+  phone?: Maybe<Scalars['String']['output']>;
   project_users?: Maybe<ProjectUserCursorConnection>;
   roles: Scalars['Iterable']['output'];
   string_id: Scalars['String']['output'];
+  telegram?: Maybe<Scalars['String']['output']>;
   timezone?: Maybe<Scalars['String']['output']>;
   user_identifier: Scalars['String']['output'];
 };
@@ -568,30 +570,6 @@ export type UserProject_UsersArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Cursor connection for User. */
-export type UserCursorConnection = {
-  __typename?: 'UserCursorConnection';
-  edges?: Maybe<Array<Maybe<UserEdge>>>;
-  pageInfo: UserPageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-/** Edge of User. */
-export type UserEdge = {
-  __typename?: 'UserEdge';
-  cursor: Scalars['String']['output'];
-  node?: Maybe<User>;
-};
-
-/** Information about the current page. */
-export type UserPageInfo = {
-  __typename?: 'UserPageInfo';
-  endCursor?: Maybe<Scalars['String']['output']>;
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor?: Maybe<Scalars['String']['output']>;
 };
 
 /** Creates a Comment. */
@@ -644,6 +622,23 @@ export type CreateNotificationPayload = {
   notification?: Maybe<Notification>;
 };
 
+/** Creates a Project. */
+export type CreateProjectInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  kanban_columns?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name: Scalars['String']['input'];
+  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tag?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Creates a Project. */
+export type CreateProjectPayload = {
+  __typename?: 'createProjectPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  project?: Maybe<Project>;
+};
+
 /** Creates a ProjectUser. */
 export type CreateProjectUserInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -665,7 +660,7 @@ export type CreateTaskInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   deadline?: InputMaybe<Scalars['String']['input']>;
-  descrition?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   kanban_column?: InputMaybe<Scalars['String']['input']>;
   parent?: InputMaybe<Scalars['String']['input']>;
   priority: Scalars['Int']['input'];
@@ -680,26 +675,6 @@ export type CreateTaskPayload = {
   __typename?: 'createTaskPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
   task?: Maybe<Task>;
-};
-
-/** Creates a User. */
-export type CreateUserInput = {
-  avatar_url?: InputMaybe<Scalars['String']['input']>;
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  content?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Scalars['String']['input'];
-  notifications?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  password: Scalars['String']['input'];
-  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  roles: Scalars['Iterable']['input'];
-  timezone?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Creates a User. */
-export type CreateUserPayload = {
-  __typename?: 'createUserPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
 };
 
 /** Deletes a Comment. */
@@ -741,6 +716,19 @@ export type DeleteNotificationPayload = {
   notification?: Maybe<Notification>;
 };
 
+/** Deletes a Project. */
+export type DeleteProjectInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+};
+
+/** Deletes a Project. */
+export type DeleteProjectPayload = {
+  __typename?: 'deleteProjectPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  project?: Maybe<Project>;
+};
+
 /** Deletes a ProjectUser. */
 export type DeleteProjectUserInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -765,19 +753,6 @@ export type DeleteTaskPayload = {
   __typename?: 'deleteTaskPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
   task?: Maybe<Task>;
-};
-
-/** Deletes a User. */
-export type DeleteUserInput = {
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-};
-
-/** Deletes a User. */
-export type DeleteUserPayload = {
-  __typename?: 'deleteUserPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
 };
 
 /** Updates a Comment. */
@@ -833,6 +808,24 @@ export type UpdateNotificationPayload = {
   notification?: Maybe<Notification>;
 };
 
+/** Updates a Project. */
+export type UpdateProjectInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  kanban_columns?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tag?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Updates a Project. */
+export type UpdateProjectPayload = {
+  __typename?: 'updateProjectPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  project?: Maybe<Project>;
+};
+
 /** Updates a ProjectUser. */
 export type UpdateProjectUserInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -855,7 +848,7 @@ export type UpdateTaskInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   deadline?: InputMaybe<Scalars['String']['input']>;
-  descrition?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   kanban_column?: InputMaybe<Scalars['String']['input']>;
   parent?: InputMaybe<Scalars['String']['input']>;
@@ -873,30 +866,9 @@ export type UpdateTaskPayload = {
   task?: Maybe<Task>;
 };
 
-/** Updates a User. */
-export type UpdateUserInput = {
-  avatar_url?: InputMaybe<Scalars['String']['input']>;
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  content?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  notifications?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  password?: InputMaybe<Scalars['String']['input']>;
-  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  roles?: InputMaybe<Scalars['Iterable']['input']>;
-  timezone?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Updates a User. */
-export type UpdateUserPayload = {
-  __typename?: 'updateUserPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
-};
-
 
 export const CreateTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"task"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
-export const TasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Tasks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"project"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"project"},"value":{"kind":"Variable","name":{"kind":"Name","value":"project"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"descrition"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TasksQuery, TasksQueryVariables>;
+export const TasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Tasks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"project"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"project"},"value":{"kind":"Variable","name":{"kind":"Name","value":"project"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TasksQuery, TasksQueryVariables>;
 export type CreateTaskMutationVariables = Exact<{
   input: CreateTaskInput;
 }>;
@@ -909,4 +881,4 @@ export type TasksQueryVariables = Exact<{
 }>;
 
 
-export type TasksQuery = { __typename?: 'Query', tasks?: { __typename?: 'TaskCursorConnection', edges?: Array<{ __typename?: 'TaskEdge', node?: { __typename?: 'Task', id: string, title: string, descrition?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null } | null } | null> | null } | null };
+export type TasksQuery = { __typename?: 'Query', tasks?: { __typename?: 'TaskCursorConnection', edges?: Array<{ __typename?: 'TaskEdge', node?: { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null } | null } | null> | null } | null };

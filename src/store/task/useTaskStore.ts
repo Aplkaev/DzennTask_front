@@ -26,11 +26,11 @@ const mapTaskStatus = (status: string | null): TaskStatusEnum => {
 
 const mapTaskInput = (task: ITask) => ({
   title: task.title ?? '',
-  descrition: task.description ?? undefined,
+  description: task.description ?? undefined,
   status: mapTaskStatus(task.status),
   priority: task.priority ?? 1,
   project: task.project_id ?? undefined,
-  assgned_to: task.assigned_to_id ?? undefined,
+  assigned_to: task.assigned_to_id ?? undefined,
 });
 
 const UPDATE_TASK_MUTATION = gql`
@@ -39,7 +39,7 @@ const UPDATE_TASK_MUTATION = gql`
       task {
         id
         title
-        descrition
+        description
         status
         priority
       }
@@ -112,7 +112,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, status: 'done' } : task
+        task.id === id ? { ...task, status: 'DONE' } : task
       ),
     }));
   },
@@ -123,11 +123,11 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
         input: {
           id,
           title: updatedTask.title ?? undefined,
-          descrition: updatedTask.description ?? undefined,
+          description: updatedTask.description ?? undefined,
           status: updatedTask.status ? mapTaskStatus(updatedTask.status) : undefined,
           priority: updatedTask.priority ?? undefined,
           project: updatedTask.project_id ?? undefined,
-          assgned_to: updatedTask.assigned_to_id ?? undefined,
+          assigned_to: updatedTask.assigned_to_id ?? undefined,
         },
       },
     });
@@ -140,7 +140,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: updatedTasks });
   },
-  setStatus: async (task: ITask, status: string = 'done') => {
+  setStatus: async (task: ITask, status: string = 'DONE') => {
     if (!task.id) {
       return;
     }

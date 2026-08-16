@@ -5,7 +5,7 @@ query Tasks($project: String!) {
       node {
         id
         title
-        descrition
+        description
         status
         priority
         project {
