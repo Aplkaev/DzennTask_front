@@ -4,7 +4,7 @@ module.exports = {
     overwrite: true,
     schema:'http://localhost/graphql',
     documents: [
-      'src/graphql/**/*.graphql',
+      'src/features/**/*.graphql',
     ],
     generates: {
       'src/generated/graphql.ts': {

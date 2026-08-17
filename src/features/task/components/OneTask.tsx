@@ -1,7 +1,7 @@
 import { Button, CloseButton, Dialog, Portal, Box } from '@chakra-ui/react';
-import type { ITask } from '@/store/task/types';
-import { useDoneTask, useToggleOneTaskView } from '@/store/task/useTaskStore';
-import { toaster } from '../ui/toaster';
+import type { ITask } from '../types';
+import { useDoneTask, useToggleOneTaskView } from '../useTaskStore';
+import { toaster } from '@/components/ui/toaster';
 
 interface DetailsTaskPorps {
   task?: ITask;

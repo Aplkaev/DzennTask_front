@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { ReactNode } from 'react';
-import { useIsAuthenticated, logout } from '@/store/auth/useAuthStore';
+import { useIsAuthenticated, logout } from '@/features/auth/useAuthStore';
 
 type Props = {
   children: ReactNode;

@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, createHttpLink, ApolloLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { useAuthStore } from '@/store/auth/useAuthStore';
+import { useAuthStore } from '@/features/auth/useAuthStore';
 import { onError } from '@apollo/client/link/error';
 
 

@@ -1,7 +1,7 @@
 import { create, type StateCreator } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { ITaskList, ITask, ITaskState } from './types';
-import OneTask from '@/components/Task/OneTask';
+import OneTask from './components/OneTask';
 import { apolloClient } from '@/shared/api/apolloClients';
 import { gql} from '@apollo/client';
 import { useMutation } from '@apollo/client/react';

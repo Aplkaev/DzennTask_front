@@ -8,7 +8,7 @@ import {
     Stack,
     Switch,
 } from "@chakra-ui/react";
-import { useUser, requestUser,  } from "@/store/auth/useAuthStore";
+import { useUser, requestUser,  } from "../useAuthStore";
 import { toaster } from '@/components/ui/toaster';
 
 interface Props {

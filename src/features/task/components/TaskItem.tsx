@@ -3,10 +3,10 @@ import {
   useRemoveTask,
   useDoneTask,
   useUpdateTask,
-} from '@/store/task/useTaskStore';
+} from '../useTaskStore';
 import DetailsTask from './DetailsTask';
 import { useState } from 'react';
-import type { ITask } from '@/store/task/types';
+import type { ITask } from '../types';
 
 interface TaskItemProps {
   task: ITask;

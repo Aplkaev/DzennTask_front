@@ -11,10 +11,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { useUpdateTask, useCreateTask } from '@/store/task/useTaskStore';
-import type { ITask } from '@/store/task/types';
-import { toaster } from '../ui/toaster';
-import { useUser } from '@/store/auth/useAuthStore';
+import { useUpdateTask, useCreateTask } from '../useTaskStore';
+import type { ITask } from '../types';
+import { toaster } from '@/components/ui/toaster';
+import { useUser } from '@/features/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
 
 interface DetailsTaskPorps {

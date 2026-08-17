@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
-import { useUser } from "@/store/auth/useAuthStore";
-import UserAvatar from "@/components/User/UserAvatar";
+import { useUser } from "@/features/auth/useAuthStore";
+import UserAvatar from "@/features/auth/components/UserAvatar";
 
 export default function Header() {
   const email = useUser()?.email;

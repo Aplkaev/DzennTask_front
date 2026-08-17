@@ -1,10 +1,10 @@
 import { Box, HStack, Input, Button, Heading } from '@chakra-ui/react';
-import { useCreateTask } from '@/store/task/useTaskStore';
-import { useUser } from '@/store/auth/useAuthStore';
+import { useCreateTask } from '../useTaskStore';
+import { useUser } from '@/features/auth/useAuthStore';
 import { useProject } from '@/store/project/useProjectStore';
 import { useState } from 'react';
 import DetailsTask from './DetailsTask';
-import type { IUser } from '@/store/auth/types';
+import type { IUser } from '@/features/auth/types';
 import type { IProject } from '@/store/project/types';
 
 interface CreateTaskProps {

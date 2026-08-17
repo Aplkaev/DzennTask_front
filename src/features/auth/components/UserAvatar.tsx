@@ -1,6 +1,6 @@
 import { Avatar, HStack } from "@chakra-ui/react";
 import { useState } from "react";
-import { useUser } from "@/store/auth/useAuthStore";
+import { useUser } from "../useAuthStore";
 import Settings from "./Settings";
 
 export default function UserAvatar() {

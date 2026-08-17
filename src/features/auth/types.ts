@@ -1,4 +1,11 @@
-import { IUser } from "../../Entity/User/types";
+interface IUser {
+  user_id: string;
+  email: string;
+  avatar_url: string | null;
+  telegram: string | null;
+  phone: string | null;
+  timezone: string | null;
+}
 
 interface ILoginInput {
   email: string;
@@ -23,4 +30,4 @@ interface IAuth {
 
 interface IAuthState extends IAction, IAuth {}
 
-export type { IAuthState, IAuth, IAction, ILoginInput, IUser }
+export type { IAuthState, IAuth, IAction, ILoginInput, IUser };

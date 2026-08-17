@@ -1,10 +1,10 @@
-import LoginForm from './components/Login/LoginForm';
-import RegForm from './components/Login/RegForm';
+import LoginForm from './features/auth/components/LoginForm';
+import RegForm from './features/auth/components/RegForm';
 import Page from './layout/Home/Pages';
 import NewProject from './components/Project/NewProject';
-import Logout from './components/Login/Logout';
-import Task from './components/Task/TaskList';
-import DatilsTask from './components/Task/DetailsTask';
+import Logout from './features/auth/components/Logout';
+import Task from './features/task/components/TaskList';
+import DatilsTask from './features/task/components/DetailsTask';
 import type { ReactNode } from 'react';
 
 export type AppRoute = {

@@ -1,4 +1,13 @@
-import { ITask } from "../../Entity/Task/types";
+interface ITask {
+  id: string | null;
+  title: string | null;
+  status: string | null;
+  priority: number | null;
+  project_id: string | null;
+  assigned_to_id: string | null;
+  description: string | null;
+}
+
 interface IActon {
   create: (task: ITask) => void;
   fetch: (id: string, filter?: Record<string, any>, text?: string) => void;
@@ -12,10 +21,9 @@ interface IActon {
 interface ITaskList {
   tasks: ITask[];
   newTask: ITask | null;
-  isOneTask: boolean
+  isOneTask: boolean;
 }
 
 interface ITaskState extends IActon, ITaskList {}
 
-
-export type { IActon, ITask, ITaskList, ITaskState }
+export type { IActon, ITask, ITaskList, ITaskState };

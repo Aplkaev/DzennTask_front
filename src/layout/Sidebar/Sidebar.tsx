@@ -4,7 +4,7 @@ import ProjectSidebar from './ProjectSidebar';
 import './style.css';
 import MenuSidebar from './MenuSidebar';
 import { ColorModeToggle } from '../../components/color-mode-toggle';
-import { useToggleOneTaskView } from '@/store/task/useTaskStore';
+import { useToggleOneTaskView } from '@/features/task/useTaskStore';
 
 const Sidebar = () => {
   const topLevelRoutes: AppRoute[] = [];

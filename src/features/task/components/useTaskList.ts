@@ -1,9 +1,9 @@
 // useTaskList.ts
 import { useEffect, useRef, useState } from 'react';
-import { fetchTasks, useDoneTask, useTasks, useUpdateTask, useCreateTask } from '@/store/task/useTaskStore';
+import { fetchTasks, useDoneTask, useTasks, useUpdateTask, useCreateTask } from '../useTaskStore';
 import { toaster } from '@/components/ui/toaster';
-import type { ITask } from '@/store/task/types';
-import type { IUser } from '@/store/auth/types';
+import type { ITask } from '../types';
+import type { IUser } from '@/features/auth/types';
 import type { IProject } from '@/store/project/types';
 
 export function useTaskList(project?: IProject, user?: IUser) {

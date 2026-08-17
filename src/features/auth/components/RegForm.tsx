@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { register as registerUser } from '@/store/auth/useAuthStore';
+import { register as registerUser } from '../useAuthStore';
 
 const registerSchema = z
   .object({
