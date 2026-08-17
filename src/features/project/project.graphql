@@ -1,0 +1,42 @@
+query Projects {
+  projects {
+    edges {
+      node {
+        id
+        name
+        tag
+        description
+      }
+    }
+  }
+}
+
+mutation CreateProject($input: createProjectInput!) {
+  createProject(input: $input) {
+    project {
+      id
+      name
+      tag
+      description
+    }
+  }
+}
+
+mutation UpdateProject($input: updateProjectInput!) {
+  updateProject(input: $input) {
+    project {
+      id
+      name
+      tag
+      description
+    }
+  }
+}
+
+mutation DeleteProject($input: deleteProjectInput!) {
+  deleteProject(input: $input) {
+    project {
+      id
+    }
+  }
+}

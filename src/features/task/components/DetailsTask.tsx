@@ -15,7 +15,7 @@ import { useUpdateTask, useCreateTask } from '../useTaskStore';
 import type { ITask } from '../types';
 import { toaster } from '@/components/ui/toaster';
 import { useUser } from '@/features/auth/useAuthStore';
-import { useProject } from '@/store/project/useProjectStore';
+import { useProject } from '@/features/project/useProjectStore';
 
 interface DetailsTaskPorps {
   task?: ITask | null;

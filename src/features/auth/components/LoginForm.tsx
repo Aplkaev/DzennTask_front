@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login, useIsAuthenticated } from '../useAuthStore';
-import { useProject } from '@/store/project/useProjectStore';
+import { useProject } from '@/features/project/useProjectStore';
 import { useEffect } from 'react';
 
 interface FormValues {

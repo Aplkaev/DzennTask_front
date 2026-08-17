@@ -45,7 +45,7 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
         </Stack>
         <Box flex="1" onClick={setDetails} cursor="pointer" width={'100px'}>
           <Text truncate fontSize="sm" color="gray.400">
-            {task.description} {task.title}
+            {task.description}
           </Text>
         </Box>
         {task.id !== null ? (

@@ -4,7 +4,7 @@ import { fetchTasks, useDoneTask, useTasks, useUpdateTask, useCreateTask } from 
 import { toaster } from '@/components/ui/toaster';
 import type { ITask } from '../types';
 import type { IUser } from '@/features/auth/types';
-import type { IProject } from '@/store/project/types';
+import type { IProject } from '@/features/project/types';
 
 export function useTaskList(project?: IProject, user?: IUser) {
   const tasks = useTasks();

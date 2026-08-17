@@ -1,11 +1,11 @@
 import { Box, HStack, Input, Button, Heading } from '@chakra-ui/react';
 import { useCreateTask } from '../useTaskStore';
 import { useUser } from '@/features/auth/useAuthStore';
-import { useProject } from '@/store/project/useProjectStore';
+import { useProject } from '@/features/project/useProjectStore';
 import { useState } from 'react';
 import DetailsTask from './DetailsTask';
 import type { IUser } from '@/features/auth/types';
-import type { IProject } from '@/store/project/types';
+import type { IProject } from '@/features/project/types';
 
 interface CreateTaskProps {
   addTask: (newTaskTitle: string, user:IUser, project: IProject) => void
@@ -17,6 +17,11 @@ const CreateTask = ({addTask}:CreateTaskProps) => {
   const user = useUser();
 
 
+  const handleAddTask = () => {
+    addTask(newTaskTitle, user, project);
+    setNewTask('');
+  };
+
   return user && project ? (
     <Box>
       <HStack mb={4}>
@@ -24,9 +29,9 @@ const CreateTask = ({addTask}:CreateTaskProps) => {
           placeholder="Добавить новую задачу..."
           value={newTaskTitle}
           onChange={(e) => setNewTask(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addTask(newTaskTitle, user, project)}
+          onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
         />
-        <Button variant="subtle" onClick={() => addTask(newTaskTitle, user, project)}>
+        <Button variant="subtle" onClick={handleAddTask}>
           Добавить
         </Button>
       </HStack>

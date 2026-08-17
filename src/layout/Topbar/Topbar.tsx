@@ -1,5 +1,5 @@
-import { Box, Input, Checkbox, Stack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Box, Button, Input, Checkbox, HStack } from '@chakra-ui/react';
+import { useToggleOneTaskView } from '@/features/task/useTaskStore';
 
 interface TopbarProps {
   onSearch: (text: string) => void;
@@ -14,14 +14,8 @@ export default function Topbar({
   statusFilter,
   filterStatusTask,
 }: TopbarProps) {
-  const [value, setValue] = useState('');
+  const toggleOneTaskView = useToggleOneTaskView();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    onSearch(newValue); // передаем наверх
-  };
-  
   return (
     <Box p={4}>
       <Input
@@ -33,7 +27,7 @@ export default function Topbar({
           }
         }}
       />
-      <Stack align="flex-start" p={4}>
+      <HStack align="flex-start" p={4} justify="space-between">
         <Checkbox.Root checked={statusFilter !== 'new'}>
           <Checkbox.HiddenInput />
           <Checkbox.Control onClick={filterStatusTask}>
@@ -47,7 +41,11 @@ export default function Topbar({
                 : 'Все задачи'}
           </Checkbox.Label>
         </Checkbox.Root>
-      </Stack>
+
+        <Button size="sm" onClick={toggleOneTaskView}>
+          Основная задача
+        </Button>
+      </HStack>
     </Box>
   );
 }

@@ -1,5 +1,5 @@
 import { Box, Stack } from '@chakra-ui/react';
-import { useProject } from '@/store/project/useProjectStore';
+import { useProject } from '@/features/project/useProjectStore';
 import { useUser } from '@/features/auth/useAuthStore';
 import Topbar from '@/layout/Topbar/Topbar';
 import CreateTask from './CreateTask';
@@ -28,6 +28,8 @@ export default function TaskList() {
     doneTask,
     loadTasks,
   } = useTaskList(project, user);
+
+  
 
   return tasks.length > 0 ? (
     <Box p={4} className="task-view">
