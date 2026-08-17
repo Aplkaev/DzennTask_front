@@ -7,7 +7,7 @@ import TaskItem from './TaskItem';
 import OneTask from './OneTask';
 import EmptyTask from './EmptyTask';
 import DetailsTask from './DetailsTask';
-import { useTaskList } from './useTastList';
+import { useTaskList } from './useTaskList';
 
 export default function TaskList() {
   

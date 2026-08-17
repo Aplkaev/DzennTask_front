@@ -132,7 +132,7 @@ const authStore: StateCreator<
 export const useAuthStore = create<IAuthState>()(
   devtools(
     persist(authStore, {
-      name: 'auth-storege',
+      name: 'auth-storage',
       storage: createJSONStorage(() => localStorage),
     })
   )
