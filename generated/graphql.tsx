@@ -906,12 +906,21 @@ export type CreateTaskMutation = { __typename?: 'Mutation', createTask?: { __typ
 
 
 export const CreateTaskDocument = gql`
-    mutation CreateTask($input: createTaskInput!) {
+mutation CreateTask($input: createTaskInput!) {
   createTask(input: $input) {
     task {
       id
       title
       status
+      description
+      assigned_to {
+        id
+        email
+      }
+      project {
+        id
+        name
+      }
     }
   }
 }

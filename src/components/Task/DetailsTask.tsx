@@ -102,6 +102,21 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
             </Dialog.Header>
             <Dialog.Body className="details-task-dialog">
               <div>
+                
+                <Text fontWeight="bold" textStyle="3xl">
+                  Описание
+                </Text>
+                <Textarea
+                  variant="flushed"
+                  placeholder="Описание"
+                  value={localTask.description}
+                  onChange={(e) =>
+                    setLocalTask((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                />
                 <Text fontWeight="bold" textStyle="3xl">
                   Приоритет
                 </Text>
@@ -118,20 +133,6 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
                   <NumberInput.Control />
                   <NumberInput.Input />
                 </NumberInput.Root>
-                <Text fontWeight="bold" textStyle="3xl">
-                  Описание
-                </Text>
-                <Textarea
-                  variant="flushed"
-                  placeholder="Описание"
-                  value={localTask.description}
-                  onChange={(e) =>
-                    setLocalTask((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                />
               </div>
 
               <Button onClick={update}>
