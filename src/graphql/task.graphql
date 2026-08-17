@@ -1,6 +1,6 @@
 mutation CreateTask($input: createTaskInput!) { createTask(input: $input) { task { id title status } } }
-query Tasks($project: String!) {
-  tasks(project: $project) {
+query Tasks($project: String!, $status: String, $status_list: [String]) {
+  tasks(project: $project, status: $status, status_list: $status_list) {
     edges {
       node {
         id
