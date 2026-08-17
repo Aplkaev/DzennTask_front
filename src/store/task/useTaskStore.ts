@@ -167,11 +167,18 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     id: string,
     filter: Record<string, any> = {},
     text?: string
-  ) => {    
+  ) => {
+    const status_list = filter.status
+      ? [filter.status]
+      : Object.values(TaskStatusEnum).filter(
+          (status) => status !== TaskStatusEnum.Done
+        );
+
     const { data } = await apolloClient.query({
       query: TasksDocument,
       variables: {
         project: `${id}`,
+        status_list,
       },
     });
 
