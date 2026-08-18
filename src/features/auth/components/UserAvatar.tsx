@@ -29,7 +29,7 @@ export default function UserAvatar() {
   return (
     <>
       <Menu.Root>
-        <Menu.Trigger asChild>
+        <Menu.Trigger>
           <Avatar.Root size="lg" cursor="pointer">
             <Avatar.Fallback name={user?.email} />
           </Avatar.Root>
