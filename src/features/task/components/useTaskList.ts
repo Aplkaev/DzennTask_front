@@ -1,19 +1,29 @@
 // useTaskList.ts
 import { useEffect, useRef, useState } from 'react';
-import { fetchTasks, useDoneTask, useTasks, useUpdateTask, useCreateTask } from '../useTaskStore';
+import {
+  fetchTasks,
+  fetchFocusTask,
+  useDoneTask,
+  useFocusTask,
+  useOneTaskView,
+  useTasks,
+  useUpdateTask,
+  useCreateTask,
+} from '../useTaskStore';
 import { toaster } from '@/components/ui/toaster';
 import type { ITask } from '../types';
 import type { IUser } from '@/features/auth/types';
 import type { IProject } from '@/features/project/types';
 
-export function useTaskList(project?: IProject, user?: IUser) {
+export function useTaskList(project?: IProject | null, user?: IUser | null) {
   const tasks = useTasks();
+  const focusTask = useFocusTask();
+  const isOneTaskView = useOneTaskView();
   const taskContainerRef = useRef<HTMLDivElement>(null);
 
   const [statusFilter, setStatusFilter] = useState<'new' | 'done' | 'all'>('new');
   const [textFilter, setTextFilter] = useState('');
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-  const [maxPriorityTask, setMaxPriorityTask] = useState<ITask>();
 
   const loadTasks = async (text = '') => {    
     if (!project?.id) return;
@@ -80,14 +90,10 @@ export function useTaskList(project?: IProject, user?: IUser) {
   }, [statusFilter]);
 
   useEffect(() => {
-    if (tasks.length === 0) return;
+    if (!project?.id || !isOneTaskView) return;
 
-    const taskMaxPriority = [...tasks]
-      .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
-      .find((task) => task.status === 'new');
-
-    setMaxPriorityTask(taskMaxPriority);
-  }, [tasks]);
+    fetchFocusTask(project.id);
+  }, [project?.id, isOneTaskView]);
 
   return {
     tasks,
@@ -98,7 +104,8 @@ export function useTaskList(project?: IProject, user?: IUser) {
     toggleStatusFilter,
     isOpenDetails,
     setIsOpenDetails,
-    maxPriorityTask,
+    focusTask,
+    isOneTaskView,
     addTask,
     doneTask,
     loadTasks,

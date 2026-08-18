@@ -11,6 +11,7 @@ interface ITask {
 interface IActon {
   create: (task: ITask) => void;
   fetch: (id: string, filter?: Record<string, any>, text?: string) => void;
+  fetchFocusTask: (id: string) => void;
   remove: (id: string) => void;
   done: (id: string) => void;
   update: (id: string, Task: ITask) => void;
@@ -21,6 +22,7 @@ interface IActon {
 interface ITaskList {
   tasks: ITask[];
   newTask: ITask | null;
+  focusTask: ITask | null;
   isOneTask: boolean;
 }
 

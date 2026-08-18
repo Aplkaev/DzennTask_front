@@ -28,7 +28,7 @@ export default function Topbar({
         }}
       />
       <HStack align="flex-start" p={4} justify="space-between">
-        <Checkbox.Root checked={statusFilter !== 'new'}>
+        {/* <Checkbox.Root checked={statusFilter !== 'new'}>
           <Checkbox.HiddenInput />
           <Checkbox.Control onClick={filterStatusTask}>
             <Checkbox.Indicator />
@@ -40,7 +40,7 @@ export default function Topbar({
                 ? 'Только выполненные'
                 : 'Все задачи'}
           </Checkbox.Label>
-        </Checkbox.Root>
+        </Checkbox.Root> */}
 
         <Button size="sm" onClick={toggleOneTaskView}>
           Основная задача

@@ -23,18 +23,18 @@ export default function TaskList() {
     toggleStatusFilter,
     isOpenDetails,
     setIsOpenDetails,
-    maxPriorityTask,
+    focusTask,
+    isOneTaskView,
     addTask,
     doneTask,
     loadTasks,
   } = useTaskList(project, user);
 
-  
-
   return tasks.length > 0 ? (
     <Box p={4} className="task-view">
-      {/* {maxPriorityTask && <OneTask task={maxPriorityTask} doneTask={doneTask} />} */}
-      {/* кнопка для продолжения работы с задачей, которая имеет наивысший приоритет */}
+      {isOneTaskView && focusTask && (
+        <OneTask task={focusTask} doneTask={doneTask} />
+      )}
       <Topbar
         onSearch={setTextFilter}
         onSubmitSearch={() => loadTasks(textFilter)}

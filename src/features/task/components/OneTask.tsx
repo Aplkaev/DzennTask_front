@@ -20,11 +20,12 @@ export default function OneTask({
   },
   doneTask,
 }: DetailsTaskPorps) {
+  const toggleOneTaskView = useToggleOneTaskView();
+
   const clickDoneTask = async () => {
     doneTask(task);
+    toggleOneTaskView();
   };
-
-  const toggleOneTaskView = useToggleOneTaskView();
 
   return (
     <Dialog.Root size="full" motionPreset="slide-in-bottom" open={true}>

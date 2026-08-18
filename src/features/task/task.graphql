@@ -16,8 +16,20 @@ mutation CreateTask($input: createTaskInput!) {
     }
   }
 }
-query Tasks($project: String!, $status: String, $status_list: [String]) {
-  tasks(project: $project, status: $status, status_list: $status_list) {
+query Tasks(
+  $project: String!
+  $status: String
+  $status_list: [String]
+  $order: [TaskFilter_order]
+  $first: Int
+) {
+  tasks(
+    project: $project
+    status: $status
+    status_list: $status_list
+    order: $order
+    first: $first
+  ) {
     edges {
       node {
         id

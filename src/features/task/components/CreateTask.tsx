@@ -18,6 +18,8 @@ const CreateTask = ({addTask}:CreateTaskProps) => {
 
 
   const handleAddTask = () => {
+    if (!user || !project) return;
+
     addTask(newTaskTitle, user, project);
     setNewTask('');
   };

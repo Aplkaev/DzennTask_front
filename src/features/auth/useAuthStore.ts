@@ -138,15 +138,7 @@ export const useAuthStore = create<IAuthState>()(
   )
 );
 
-export const useUser = (): IUser => {
-  useAuthStore((state) => state.user);
-
-  const user = useAuthStore((state) => state.user);
-  if (!user) {
-    throw new Error('User not stored');
-  }
-  return user;
-};
+export const useUser = (): IUser | null => useAuthStore((state) => state.user);
 export const useIsAuthenticated = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useToken = () => useAuthStore((state) => state.token);

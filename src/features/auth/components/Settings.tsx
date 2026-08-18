@@ -19,6 +19,8 @@ interface Props {
 export default function Settings({ open, onClose }: Props) {
     const user = useUser();
     const save = async () => {
+        if (!user) return;
+
         try {
             await requestUser(user);
 

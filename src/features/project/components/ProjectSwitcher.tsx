@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -17,7 +17,6 @@ import { toaster } from '@/components/ui/toaster';
 import {
   useProjects,
   useProject,
-  fetchProjects,
   selectedProject,
   removeProject,
   editProject,
@@ -33,10 +32,6 @@ export default function ProjectSwitcher() {
   const [query, setQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

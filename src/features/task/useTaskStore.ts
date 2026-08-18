@@ -10,6 +10,7 @@ import { CreateTaskDocument, TaskStatusEnum, TasksDocument } from '@/generated/g
 const initialState: ITaskList = {
   tasks: [],
   newTask: null,
+  focusTask: null,
   isOneTask: true,
 };
 
@@ -186,6 +187,19 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
       tasks: data.tasks?.edges?.map((edge) => edge?.node) ?? [],
     });
   },
+  fetchFocusTask: async (id: string) => {
+    const { data } = await apolloClient.query({
+      query: TasksDocument,
+      variables: {
+        project: `${id}`,
+        status_list: [TaskStatusEnum.New],
+        order: [{ priority: 'DESC' }],
+        first: 1,
+      },
+    });
+
+    set({ focusTask: data?.tasks?.edges?.[0]?.node ?? null });
+  },
   toggleOneTaskView: () => {
     set({ isOneTask: !get().isOneTask });
   },
@@ -204,6 +218,9 @@ export const fetchTasks = (
   filter: Record<string, any> = {},
   text?: string
 ) => useTaskStore.getState().fetch(id, filter, text);
+export const fetchFocusTask = (id: string) =>
+  useTaskStore.getState().fetchFocusTask(id);
+export const useFocusTask = () => useTaskStore((state) => state.focusTask);
 export const useTasks = () => useTaskStore((state) => state.tasks);
 export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
 export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
