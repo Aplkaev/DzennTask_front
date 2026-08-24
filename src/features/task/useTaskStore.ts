@@ -13,13 +13,17 @@ const initialState: ITaskList = {
   focusTask: null,
   isOneTask: true,
 };
+const enum TaskStatusLowerEnum {
+  Done = 'done',
+  New = 'new'
+}
 
 const mapTaskStatus = (status: string | null): TaskStatusEnum => {
   switch (status) {
-    case 'done':
+    case TaskStatusLowerEnum.Done:
       return TaskStatusEnum.Done;
 
-    case 'new':
+    case TaskStatusLowerEnum.New:
     default:
       return TaskStatusEnum.New;
   }
@@ -113,7 +117,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, status: 'DONE' } : task
+        task.id === id ? { ...task, status: TaskStatusEnum.Done } : task
       ),
     }));
   },
@@ -141,7 +145,7 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 
     set({ tasks: updatedTasks });
   },
-  setStatus: async (task: ITask, status: string = 'DONE') => {
+  setStatus: async (task: ITask, status: string = TaskStatusEnum.Done) => {
     if (!task.id) {
       return;
     }
@@ -188,15 +192,19 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
     });
   },
   fetchFocusTask: async (id: string) => {
+    console.log('fetchFocusTask', id);
+    
     const { data } = await apolloClient.query({
       query: TasksDocument,
       variables: {
         project: `${id}`,
-        status_list: [TaskStatusEnum.New],
+        status_list: [TaskStatusLowerEnum.New],
         order: [{ priority: 'DESC' }],
         first: 1,
       },
+      fetchPolicy: "network-only" 
     });
+    console.log('fetchFocusTask data:', data); // ← добавить
 
     set({ focusTask: data?.tasks?.edges?.[0]?.node ?? null });
   },

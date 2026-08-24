@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { Button, CloseButton, Dialog, Portal, Box } from '@chakra-ui/react';
 import type { ITask } from '../types';
-import { useDoneTask, useToggleOneTaskView } from '../useTaskStore';
+import { useDoneTask, useToggleOneTaskView, fetchFocusTask } from '../useTaskStore';
+import { useProject } from '../../project/useProjectStore';
 import { toaster } from '@/components/ui/toaster';
 
 interface DetailsTaskPorps {
@@ -20,10 +22,17 @@ export default function OneTask({
   },
   doneTask,
 }: DetailsTaskPorps) {
+  const projectId = useProject().id;
   const toggleOneTaskView = useToggleOneTaskView();
+  const fetchFocusTasks = () => {
+    console.log('fetchFocusTasks');
+    
+    fetchFocusTask(projectId)
+  };
 
   const clickDoneTask = async () => {
-    doneTask(task);
+    await doneTask(task);
+    await fetchFocusTasks();
     toggleOneTaskView();
   };
 

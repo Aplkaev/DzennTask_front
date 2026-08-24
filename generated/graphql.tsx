@@ -530,8 +530,8 @@ export type TaskPageInfo = {
 };
 
 export enum TaskStatusEnum {
-  Done = 'DONE',
-  New = 'NEW'
+  Done = 'done',
+  New = 'new'
 }
 
 export type User = Node & {
