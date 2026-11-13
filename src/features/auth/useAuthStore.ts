@@ -1,8 +1,13 @@
 import { create, type StateCreator } from 'zustand';
-import { api } from '@/shared/api/apiClient';
-import {  apolloClient } from '@/shared/api/apolloClients';
-import { gql } from '@apollo/client';
+import { apolloClient } from '@/shared/api/apolloClients';
 import { createJSONStorage, persist, devtools } from 'zustand/middleware';
+import {
+  LoginUserDocument,
+  MeDocument,
+  RegisterUserDocument,
+  UpdateUserDocument,
+  type UserFieldsFragment,
+} from '@/generated/graphql';
 import type { IAuthState, ILoginInput, IAuth, IUser } from './types';
 
 const initialState: IAuth = {
@@ -12,121 +17,97 @@ const initialState: IAuth = {
   user: null,
 };
 
+const mapUser = (user: UserFieldsFragment): IUser => ({
+  user_id: user.id,
+  email: user.email,
+  avatar_url: user.avatar_url ?? null,
+  telegram: user.telegram ?? null,
+  phone: user.phone ?? null,
+  timezone: user.timezone ?? null,
+});
+
 const authStore: StateCreator<
   IAuthState,
   [['zustand/devtools', never], ['zustand/persist', unknown]]
-> = (set, get) => ({
+> = (set) => ({
   ...initialState,
-  getUsers: async () => {
-    const { data } = await apolloClient.query({
-      query: gql`
-        query {
-          users {
-            edges {
-              node {
-                id
-                email
-              }
-            }
-          }
-        }
-      `
-    });    
-  },
   getMe: async () => {
-    const { data } = await apolloClient.query<{
-      meUser: {
-        id: string;
-        email: string;
-        telegram: string | null;
-        phone: string | null;
-        timezone: string | null;
-      };
-    }>({
-      query: gql`
-        query {
-          meUser {
-              id
-              email
-              telegram
-              phone
-              timezone
-          }
-      }
-      `
+    const { data } = await apolloClient.query({
+      query: MeDocument,
+      fetchPolicy: 'network-only',
     });
 
-    if (!data) return;
+    if (!data?.meUser) return;
 
-    set({
-      user: {
-        user_id: data.meUser.id,
-        email: data.meUser.email,
-        avatar_url: null,
-        telegram: data.meUser.telegram,
-        phone: data.meUser.phone,
-        timezone: data.meUser.timezone,
-      },
-    }, false, 'auth_store_get_me');
+    set({ user: mapUser(data.meUser) }, false, 'auth_store_get_me');
   },
   login: async (loginInput: ILoginInput) => {
-    // try {
-    const { data } = await api.post('/login', {
-      username: loginInput.email,
-      password: loginInput.password,
+    const { data } = await apolloClient.mutate({
+      mutation: LoginUserDocument,
+      variables: {
+        input: {
+          email: loginInput.email,
+          plain_password: loginInput.password,
+        },
+      },
     });
 
-    const { token } = data;
-    const { user } = data;
+    const user = data?.loginUser?.user;
+    if (!user?.token) {
+      throw new Error('Не удалось войти');
+    }
 
-    set({ token: token, isAuthenticated: true }, false, 'auth_store_login');
-    // set({
-    //   user: {
-    //     user_id: user.id,
-    //     email: user.email,
-    //     avatar_url: user.avatar_url,
-    //     telegram: user.telegram,
-    //     phone: user.phone,
-    //     timezone: user.timezone,
-    //   },
-    // }, false, 'auth_store_login_user');
-
-    // get().getMe();
-
-    // } catch (error) {
-
-    // console.log(error);
-    // useAuthStore.getState().logout();
-    // }
-  },
-  logout: () =>
     set(
-      () => ({ token: '', isAuthenticated: false }),
+      { token: user.token, isAuthenticated: true, user: mapUser(user) },
+      false,
+      'auth_store_login'
+    );
+  },
+  logout: () => {
+    set(() => ({ ...initialState }), false, 'auth_store_logout');
+    apolloClient.clearStore().catch(() => undefined);
+  },
+  register: async (registerInput: ILoginInput) => {
+    const { data } = await apolloClient.mutate({
+      mutation: RegisterUserDocument,
+      variables: {
+        input: {
+          email: registerInput.email,
+          plain_password: registerInput.password,
+        },
+      },
+    });
+
+    const user = data?.registerUser?.user;
+    if (!user?.token) {
+      throw new Error('Не удалось зарегистрироваться');
+    }
+
+    set(
+      { token: user.token, isAuthenticated: true, user: mapUser(user) },
       false,
       'auth_store_register'
-    ),
-  register: async (user: ILoginInput) => {
-    try {
-      const response = await api.post('/users/register', {
-        email: user.email,
-        password: user.password,
-      });
+    );
+  },
+  updateUser: async (user: IUser) => {
+    const { data } = await apolloClient.mutate({
+      mutation: UpdateUserDocument,
+      variables: {
+        input: {
+          id: user.user_id,
+          telegram: user.telegram,
+          phone: user.phone,
+          timezone: user.timezone,
+          avatar_url: user.avatar_url,
+        },
+      },
+    });
 
-      const { token } = response.data;
-
-      set(
-        { token: token, isAuthenticated: true },
-        false,
-        'auth_store_register'
-      );
-    } catch (error) {
-      console.log(error);
-      useAuthStore.getState().logout();
+    const updated = data?.updateUser?.user;
+    if (updated) {
+      set({ user: mapUser(updated) }, false, 'auth_store_update_user');
     }
   },
-  requestUser: async (user: IUser) => {
-    await api.post('/users/request', user)
-  }
 });
 
 export const useAuthStore = create<IAuthState>()(
@@ -146,5 +127,6 @@ export const login = (user: ILoginInput) => useAuthStore.getState().login(user);
 export const logout = () => useAuthStore.getState().logout();
 export const register = (user: ILoginInput) =>
   useAuthStore.getState().register(user);
-export const requestUser = (user: IUser) => useAuthStore.getState().requestUser(user);
+export const updateUser = (user: IUser) =>
+  useAuthStore.getState().updateUser(user);
 export const getMe = () => useAuthStore.getState().getMe();

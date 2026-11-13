@@ -1,11 +1,16 @@
 import { create, type StateCreator } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { ITaskList, ITask, ITaskState } from './types';
-import OneTask from './components/OneTask';
+import type { ITask, ITaskFilter, ITaskList, ITaskState } from './types';
 import { apolloClient } from '@/shared/api/apolloClients';
-import { gql} from '@apollo/client';
-import { useMutation } from '@apollo/client/react';
-import { CreateTaskDocument, TaskStatusEnum, TasksDocument } from '@/generated/graphql';
+import {
+  CreateTaskDocument,
+  DeleteTaskDocument,
+  TaskStatusEnum,
+  TasksDocument,
+  UpdateTaskDocument,
+  type TaskFieldsFragment,
+  type UpdateTaskInput,
+} from '@/generated/graphql';
 
 const initialState: ITaskList = {
   tasks: [],
@@ -13,54 +18,34 @@ const initialState: ITaskList = {
   focusTask: null,
   isOneTask: true,
 };
-const enum TaskStatusLowerEnum {
-  Done = 'done',
-  New = 'new'
-}
 
-const mapTaskStatus = (status: string | null): TaskStatusEnum => {
-  switch (status) {
-    case TaskStatusLowerEnum.Done:
-      return TaskStatusEnum.Done;
+const mapTask = (node: TaskFieldsFragment): ITask => ({
+  id: node.id,
+  title: node.title,
+  description: node.description ?? null,
+  status: node.status,
+  priority: node.priority,
+  project_id: node.project?.id ?? null,
+  assigned_to_id: node.assigned_to?.id ?? null,
+});
 
-    case TaskStatusLowerEnum.New:
-    default:
-      return TaskStatusEnum.New;
-  }
-};
+const mapTaskList = (
+  edges: ({ node?: TaskFieldsFragment | null } | null)[] | null | undefined
+): ITask[] =>
+  (edges ?? [])
+    .map((edge) => edge?.node)
+    .filter((node): node is TaskFieldsFragment => node != null)
+    .map(mapTask);
 
-const mapTaskInput = (task: ITask) => ({
-  title: task.title ?? '',
-  description: task.description ?? undefined,
-  status: mapTaskStatus(task.status),
-  priority: task.priority ?? 1,
+const toUpdateInput = (id: string, task: Partial<ITask>): UpdateTaskInput => ({
+  id,
+  title: task.title,
+  description: task.description,
+  status: task.status,
+  priority: task.priority,
   project: task.project_id ?? undefined,
   assigned_to: task.assigned_to_id ?? undefined,
 });
-
-const UPDATE_TASK_MUTATION = gql`
-  mutation UpdateTask($input: updateTaskInput!) {
-    updateTask(input: $input) {
-      task {
-        id
-        title
-        description
-        status
-        priority
-      }
-    }
-  }
-`;
-
-const DELETE_TASK_MUTATION = gql`
-  mutation DeleteTask($input: deleteTaskInput!) {
-    deleteTask(input: $input) {
-      task {
-        id
-      }
-    }
-  }
-`;
 
 const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
   set,
@@ -68,150 +53,113 @@ const taskStore: StateCreator<ITaskState, [['zustand/devtools', never]]> = (
 ) => ({
   ...initialState,
   create: async (task: ITask) => {
-    try {
-      console.log('Create task', task, mapTaskInput(task));
-      const { data } = await apolloClient.mutate({
-        mutation: CreateTaskDocument,
-
-        variables: {
-          input: mapTaskInput(task),
-        },
-      });
-
-      const newTask = data?.createTask?.task;
-
-      if (!newTask) {
-        return null;
-      }
-
-      set({
-        newTask,
-
-        tasks: [newTask, ...get().tasks],
-      });
-
-      return newTask;
-    } catch (error) {
-      console.error('Create task error', error);
-
-      throw error;
-    }
-  },
-  getImportant: async (id: string) => {
-    const { data } = await apolloClient.query({
-      query: TasksDocument,
-      variables: {
-        project: `${id}`,
-      },
-    });
-
-    set({ tasks: data.tasks?.edges?.map((edge) => edge?.node) ?? [] });
-  },
-  done: async (id: string) => {
-    apolloClient.mutate({
-      mutation: UPDATE_TASK_MUTATION,
-      variables: {
-        input: { id, status: TaskStatusEnum.Done },
-      },
-    });
-
-    set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, status: TaskStatusEnum.Done } : task
-      ),
-    }));
-  },
-  update: async (id: string, updatedTask: ITask) => {
-    apolloClient.mutate({
-      mutation: UPDATE_TASK_MUTATION,
+    const { data } = await apolloClient.mutate({
+      mutation: CreateTaskDocument,
       variables: {
         input: {
-          id,
-          title: updatedTask.title ?? undefined,
-          description: updatedTask.description ?? undefined,
-          status: updatedTask.status ? mapTaskStatus(updatedTask.status) : undefined,
-          priority: updatedTask.priority ?? undefined,
-          project: updatedTask.project_id ?? undefined,
-          assigned_to: updatedTask.assigned_to_id ?? undefined,
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          priority: task.priority,
+          project: task.project_id ?? undefined,
+          // без исполнителя бэкенд назначит задачу на автора
+          assigned_to: task.assigned_to_id ?? undefined,
         },
       },
     });
 
-    const currentTasks = get().tasks;
-
-    const updatedTasks = currentTasks.map((task) =>
-      task.id === id ? { ...task, ...updatedTask } : task
-    );
-
-    set({ tasks: updatedTasks });
-  },
-  setStatus: async (task: ITask, status: string = TaskStatusEnum.Done) => {
-    if (!task.id) {
-      return;
+    const node = data?.createTask?.task;
+    if (!node) {
+      return null;
     }
 
-    task.status = status;
+    const newTask = mapTask(node);
+    set({ newTask, tasks: [newTask, ...get().tasks] });
 
-    get().update(task.id, task);
+    return newTask;
   },
-  remove: async (id: string) => {
-    apolloClient.mutate({
-      mutation: DELETE_TASK_MUTATION,
-      variables: {
-        input: { id },
-      },
-    });
-
-    const currentProjects = get().tasks;
-
-    const tasks = currentProjects.filter((task) => task.id !== id);
-
-    set({ tasks: tasks });
-  },
-  fetch: async (
-    id: string,
-    filter: Record<string, any> = {},
-    text?: string
-  ) => {
-    const status_list = filter.status
-      ? [filter.status]
-      : Object.values(TaskStatusEnum).filter(
-          (status) => status !== TaskStatusEnum.Done
-        );
+  fetch: async (projectId: string, filter: ITaskFilter = {}) => {
+    const status = filter.status ?? 'new';
 
     const { data } = await apolloClient.query({
       query: TasksDocument,
       variables: {
-        project: `${id}`,
-        status_list,
+        project: projectId,
+        status_list: status === 'all' ? undefined : [status],
+        title: filter.text || undefined,
+        order: [{ priority: 'DESC' }],
       },
+      fetchPolicy: 'network-only',
     });
 
-    set({
-      tasks: data.tasks?.edges?.map((edge) => edge?.node) ?? [],
-    });
+    set({ tasks: mapTaskList(data?.tasks?.edges) });
   },
-  fetchFocusTask: async (id: string) => {
-    console.log('fetchFocusTask', id);
-    
+  fetchFocusTask: async (projectId: string) => {
     const { data } = await apolloClient.query({
       query: TasksDocument,
       variables: {
-        project: `${id}`,
-        status_list: [TaskStatusLowerEnum.New],
+        project: projectId,
+        status_list: ['new'],
         order: [{ priority: 'DESC' }],
         first: 1,
       },
-      fetchPolicy: "network-only" 
+      fetchPolicy: 'network-only',
     });
-    console.log('fetchFocusTask data:', data); // ← добавить
 
-    set({ focusTask: data?.tasks?.edges?.[0]?.node ?? null });
+    set({ focusTask: mapTaskList(data?.tasks?.edges)[0] ?? null });
+  },
+  update: async (id: string, patch: Partial<ITask>) => {
+    const prevTasks = get().tasks;
+
+    // оптимистично обновляем список, при ошибке откатываем
+    set({
+      tasks: prevTasks.map((task) =>
+        task.id === id ? { ...task, ...patch } : task
+      ),
+    });
+
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: UpdateTaskDocument,
+        variables: { input: toUpdateInput(id, patch) },
+      });
+
+      const node = data?.updateTask?.task;
+      if (node) {
+        const updated = mapTask(node);
+        set({
+          tasks: get().tasks.map((task) => (task.id === id ? updated : task)),
+          focusTask: get().focusTask?.id === id ? updated : get().focusTask,
+        });
+      }
+    } catch (error) {
+      set({ tasks: prevTasks });
+      throw error;
+    }
+  },
+  done: async (id: string) => {
+    await get().update(id, { status: TaskStatusEnum.Done });
+  },
+  remove: async (id: string) => {
+    const prevTasks = get().tasks;
+
+    set({ tasks: prevTasks.filter((task) => task.id !== id) });
+
+    try {
+      await apolloClient.mutate({
+        mutation: DeleteTaskDocument,
+        variables: { input: { id } },
+      });
+    } catch (error) {
+      set({ tasks: prevTasks });
+      throw error;
+    }
   },
   toggleOneTaskView: () => {
     set({ isOneTask: !get().isOneTask });
   },
 });
+
 const useTaskStore = create<ITaskState>()(
   persist(devtools(taskStore, { name: 'TaskStore' }), {
     name: 'task-store',
@@ -219,24 +167,19 @@ const useTaskStore = create<ITaskState>()(
   })
 );
 
-export const useCreateTask = (task: ITask) =>
-  useTaskStore.getState().create(task);
-export const fetchTasks = (
-  id: string,
-  filter: Record<string, any> = {},
-  text?: string
-) => useTaskStore.getState().fetch(id, filter, text);
-export const fetchFocusTask = (id: string) =>
-  useTaskStore.getState().fetchFocusTask(id);
+export const createTask = (task: ITask) => useTaskStore.getState().create(task);
+export const fetchTasks = (projectId: string, filter: ITaskFilter = {}) =>
+  useTaskStore.getState().fetch(projectId, filter);
+export const fetchFocusTask = (projectId: string) =>
+  useTaskStore.getState().fetchFocusTask(projectId);
+export const updateTask = (id: string, task: Partial<ITask>) =>
+  useTaskStore.getState().update(id, task);
+export const doneTask = (id: string) => useTaskStore.getState().done(id);
+export const removeTask = (id: string) => useTaskStore.getState().remove(id);
+export const toggleOneTaskView = () =>
+  useTaskStore.getState().toggleOneTaskView();
+
 export const useFocusTask = () => useTaskStore((state) => state.focusTask);
 export const useTasks = () => useTaskStore((state) => state.tasks);
-export const useDoneTask = (id: string) => useTaskStore.getState().done(id);
-export const useRemoveTask = (id: string) => useTaskStore.getState().remove(id);
-export const useUpdateTask = (id: string, task: ITask) =>
-  useTaskStore.getState().update(id, task);
 export const useNewTask = () => useTaskStore((state) => state.newTask);
-export const useSetStatus = (task: ITask, status: string) =>
-  useTaskStore.getState().setStatus(task, status);
 export const useOneTaskView = () => useTaskStore((state) => state.isOneTask);
-export const useToggleOneTaskView = () =>
-  useTaskStore((state) => state.toggleOneTaskView);

@@ -46,7 +46,7 @@ export default function RegForm() {
         duration: 5000,
       });
 
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error(error);
       toaster.create({
@@ -69,7 +69,7 @@ export default function RegForm() {
       onSubmit={onSubmit}
       px={4}
     >
-      <Stack spacing={6}>
+      <Stack gap={6}>
         <Field.Root invalid={!!errors.email}>
           <Field.Label>Почта</Field.Label>
           <Input
@@ -102,17 +102,17 @@ export default function RegForm() {
 
         <Button
           type="submit"
-          isLoading={isSubmitting}
+          loading={isSubmitting}
           w="full"
-          colorScheme="blue"
+          colorPalette="blue"
         >
           Зарегистрироваться
         </Button>
 
         <Text fontSize="sm" textAlign="center">
           Уже есть аккаунт?{' '}
-          <Link as={RouterLink} to="/login" color="blue.500">
-            Войти
+          <Link asChild color="blue.500">
+            <RouterLink to="/login">Войти</RouterLink>
           </Link>
         </Text>
       </Stack>

@@ -6,10 +6,11 @@ import {
     Field,
     Input,
     Stack,
-    Switch,
 } from "@chakra-ui/react";
-import { useUser, requestUser,  } from "../useAuthStore";
+import { useEffect, useState } from "react";
+import { useUser, updateUser } from "../useAuthStore";
 import { toaster } from '@/components/ui/toaster';
+import type { IUser } from "../types";
 
 interface Props {
     open: boolean;
@@ -18,11 +19,21 @@ interface Props {
 
 export default function Settings({ open, onClose }: Props) {
     const user = useUser();
+    const [form, setForm] = useState<IUser | null>(user);
+
+    useEffect(() => {
+        if (open) setForm(user);
+    }, [open, user]);
+
+    const setField = (field: 'telegram' | 'phone' | 'timezone', value: string) =>
+        setForm((prev) => (prev ? { ...prev, [field]: value || null } : prev));
+
     const save = async () => {
-        if (!user) return;
+        if (!form) return;
 
         try {
-            await requestUser(user);
+            await updateUser(form);
+            onClose();
 
             toaster.create({
                 title: 'Сохранение выполнено!',
@@ -63,13 +74,13 @@ export default function Settings({ open, onClose }: Props) {
                         <Stack gap={6}>
 
                             <Avatar.Root size="2xl" alignSelf="center">
-                                <Avatar.Fallback name={user?.email} />
+                                <Avatar.Fallback name={form?.email} />
                             </Avatar.Root>
 
                             <Field.Root>
                                 <Field.Label>Email</Field.Label>
                                 <Input
-                                    value={user?.email ?? ""}
+                                    value={form?.email ?? ""}
                                     readOnly
                                 />
                             </Field.Root>
@@ -77,7 +88,8 @@ export default function Settings({ open, onClose }: Props) {
                             <Field.Root>
                                 <Field.Label>Telegram</Field.Label>
                                 <Input
-                                    value={user?.telegram ?? ""}
+                                    value={form?.telegram ?? ""}
+                                    onChange={(e) => setField('telegram', e.target.value)}
                                     placeholder="@username"
                                 />
                             </Field.Root>
@@ -85,7 +97,8 @@ export default function Settings({ open, onClose }: Props) {
                             <Field.Root>
                                 <Field.Label>Телефон</Field.Label>
                                 <Input
-                                    value={user?.phone ?? ""}
+                                    value={form?.phone ?? ""}
+                                    onChange={(e) => setField('phone', e.target.value)}
                                     placeholder="+7..."
                                 />
                             </Field.Root>
@@ -93,7 +106,8 @@ export default function Settings({ open, onClose }: Props) {
                             <Field.Root>
                                 <Field.Label>Часовой пояс</Field.Label>
                                 <Input 
-                                    value={user?.timezone ?? ""}
+                                    value={form?.timezone ?? ""}
+                                    onChange={(e) => setField('timezone', e.target.value)}
                                     placeholder="Europe/Moscow" 
                                 />
                             </Field.Root>
@@ -106,12 +120,12 @@ export default function Settings({ open, onClose }: Props) {
 
                         <Button
                             variant="outline"
-                            onClick={save}
+                            onClick={onClose}
                         >
                             Отмена
                         </Button>
 
-                        <Button colorPalette="blue">
+                        <Button colorPalette="blue" onClick={save}>
                             Сохранить
                         </Button>
 

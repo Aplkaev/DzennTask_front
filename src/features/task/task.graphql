@@ -1,46 +1,62 @@
-mutation CreateTask($input: createTaskInput!) {
-  createTask(input: $input) {
-    task {
-      id
-      title
-      status
-      description
-      assigned_to {
-        id
-        email
-      }
-      project {
-        id
-        name
-      }
-    }
+fragment TaskFields on Task {
+  id
+  title
+  description
+  status
+  priority
+  project {
+    id
+  }
+  assigned_to {
+    id
+    email
   }
 }
+
+# status / status_list — значения из БД в нижнем регистре ('new', 'done'),
+# а не имена enum TaskStatusEnum ('NEW', 'DONE').
 query Tasks(
   $project: String!
-  $status: String
   $status_list: [String]
+  $title: String
   $order: [TaskFilter_order]
   $first: Int
 ) {
   tasks(
     project: $project
-    status: $status
     status_list: $status_list
+    title: $title
     order: $order
     first: $first
   ) {
     edges {
       node {
-        id
-        title
-        description
-        status
-        priority
-        project {
-          id
-        }
+        ...TaskFields
       }
+    }
+  }
+}
+
+mutation CreateTask($input: createTaskInput!) {
+  createTask(input: $input) {
+    task {
+      ...TaskFields
+    }
+  }
+}
+
+mutation UpdateTask($input: updateTaskInput!) {
+  updateTask(input: $input) {
+    task {
+      ...TaskFields
+    }
+  }
+}
+
+mutation DeleteTask($input: deleteTaskInput!) {
+  deleteTask(input: $input) {
+    task {
+      id
     }
   }
 }

@@ -2,6 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink, ApolloLink } from '@apollo
 import { setContext } from '@apollo/client/link/context';
 import { useAuthStore } from '@/features/auth/useAuthStore';
 import { onError } from '@apollo/client/link/error';
+import { ServerError } from '@apollo/client/errors';
 
 
 
@@ -13,23 +14,20 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   const token = useAuthStore.getState().token;
 
+  // Без токена заголовок не шлём: loginUser/registerUser работают анонимно,
+  // а протухший токен дал бы 401 ещё до мутации.
   return {
-    headers: {
-      ...headers,
-      Authorization: token ? `Bearer ${token}` : '',
-    },
+    headers: token ? { ...headers, Authorization: `Bearer ${token}` } : headers,
   };
 });
 
 // =========================
 // ERROR LINK
 // =========================
-const errorLink = onError(({ error, operation, forward }) => {
-  if (
-    error &&
-    'message' in error &&
-    error.message.includes('Received status code 401')
-  ) {
+// 401 приходит только от JWT-фаервола (протух/битый токен). Неверный пароль в loginUser —
+// обычная GraphQL-ошибка с HTTP 200, сюда не попадает.
+const errorLink = onError(({ error }) => {
+  if (ServerError.is(error) && error.statusCode === 401) {
     useAuthStore.getState().logout();
 
     window.location.href = '/login';
@@ -45,7 +43,7 @@ export const apolloClient = new ApolloClient({
         fields: {
           projects: {
             keyArgs: false,
-            merge(existing = [], incoming) {
+            merge(_existing, incoming) {
               return incoming;
             },
           },

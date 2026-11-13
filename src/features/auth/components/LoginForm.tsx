@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { toaster } from '@/components/ui/toaster';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login, useIsAuthenticated } from '../useAuthStore';
-import { useProject } from '@/features/project/useProjectStore';
 import { useEffect } from 'react';
 
 interface FormValues {
@@ -14,7 +13,6 @@ interface FormValues {
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const project = useProject();
   if(useIsAuthenticated()) {  
     navigate('/');
   }
@@ -46,8 +44,6 @@ export default function LoginForm() {
         duration: 5000,
       });
     } catch (error) {
-      console.log(error.message);
-
       toaster.create({
         description:
           error instanceof Error ? error.message : 'Неизвестная ошибка',
@@ -72,7 +68,7 @@ export default function LoginForm() {
       }}     
       px={4}
     >
-      <Stack spacing={6}>
+      <Stack gap={6}>
         <Field.Root invalid={!!errors.username}>
           <Field.Label>Username</Field.Label>
           <Input {...register('username')} />
@@ -85,14 +81,14 @@ export default function LoginForm() {
           <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
         </Field.Root>
 
-        <Button type="submit" colorScheme="blue" w="full">
+        <Button type="submit" colorPalette="blue" w="full">
           Войти
         </Button>
 
         <Text fontSize="sm" textAlign="center">
           Нет аккаунта?{' '}
-          <Link as={RouterLink} to="/register" color="blue.500">
-            Зарегистрироваться
+          <Link asChild color="blue.500">
+            <RouterLink to="/register">Зарегистрироваться</RouterLink>
           </Link>
         </Text>
       </Stack>

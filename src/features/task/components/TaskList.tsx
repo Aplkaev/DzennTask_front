@@ -27,41 +27,59 @@ export default function TaskList() {
     isOneTaskView,
     addTask,
     doneTask,
+    removeTask,
     loadTasks,
   } = useTaskList(project, user);
 
-  return tasks.length > 0 ? (
+  // Поиск и фильтр показываем всегда: иначе пустой результат поиска их прячет
+  const isFiltered = statusFilter !== 'new' || textFilter !== '';
+
+  return (
     <Box p={4} className="task-view">
       {isOneTaskView && focusTask && (
         <OneTask task={focusTask} doneTask={doneTask} />
       )}
-      <Topbar
-        onSearch={setTextFilter}
-        onSubmitSearch={() => loadTasks(textFilter)}
-        filterStatusTask={toggleStatusFilter}
-        statusFilter={statusFilter}
-      />
+      {(tasks.length > 0 || isFiltered) && (
+        <>
+          <Topbar
+            onSearch={setTextFilter}
+            onSubmitSearch={() => loadTasks(textFilter)}
+            filterStatusTask={toggleStatusFilter}
+            statusFilter={statusFilter}
+          />
+          <hr />
+        </>
+      )}
 
-      <hr />
+      {tasks.length > 0 ? (
+        <>
+          <Stack align="stretch" p={4}>
+            <Stack align="stretch" ref={taskContainerRef}>
+              {tasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  doneTask={doneTask}
+                  removeTask={removeTask}
+                />
+              ))}
+            </Stack>
+          </Stack>
 
-      <Stack align="stretch" p={4}>
-        <Stack align="stretch" ref={taskContainerRef}>
-          {tasks.map((task) => (
-            <TaskItem key={task.id} task={task} doneTask={doneTask} />
-          ))}
-        </Stack>
-      </Stack>
-
-      <CreateTask addTask={(title) => addTask(title)} />
-    </Box>
-  ) : (
-    <Box>
-      {isOpenDetails && <DetailsTask onClose={() => setIsOpenDetails(false)} />}
-      <EmptyTask
-        clickCreate={() => setIsOpenDetails(true)}
-        title="Задач нет"
-        buttonCreateTitle="Создать задачу"
-      />
+          <CreateTask addTask={addTask} />
+        </>
+      ) : (
+        <Box>
+          {isOpenDetails && (
+            <DetailsTask onClose={() => setIsOpenDetails(false)} />
+          )}
+          <EmptyTask
+            clickCreate={() => setIsOpenDetails(true)}
+            title={isFiltered ? 'Ничего не найдено' : 'Задач нет'}
+            buttonCreateTitle="Создать задачу"
+          />
+        </Box>
+      )}
     </Box>
   );
 }

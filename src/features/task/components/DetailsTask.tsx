@@ -11,11 +11,12 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { useUpdateTask, useCreateTask } from '../useTaskStore';
+import { updateTask, createTask } from '../useTaskStore';
 import type { ITask } from '../types';
 import { toaster } from '@/components/ui/toaster';
 import { useUser } from '@/features/auth/useAuthStore';
 import { useProject } from '@/features/project/useProjectStore';
+import { TaskStatusEnum } from '@/generated/graphql';
 
 interface DetailsTaskPorps {
   task?: ITask | null;
@@ -25,7 +26,7 @@ interface DetailsTaskPorps {
 const emptyTask: ITask = {
   id: null,
   title: '',
-  status: 'new',
+  status: TaskStatusEnum.New,
   priority: 1,
   project_id: null,
   assigned_to_id: null,
@@ -36,36 +37,42 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
   const user = useUser();
   const project = useProject();
 
-  const newTask:ITask = {
-    ...emptyTask,
-    assigned_to_id: user?.user_id ?? '',
-    project_id: project?.id ?? '' 
-  }
-  
-  const [localTask, setLocalTask] = useState<ITask>(task ?? newTask);
+  const initialTask = (): ITask =>
+    task ?? {
+      ...emptyTask,
+      assigned_to_id: user?.user_id ?? null,
+      project_id: project?.id ?? null,
+    };
+
+  const [localTask, setLocalTask] = useState<ITask>(initialTask);
 
   useEffect(() => {
-    setLocalTask(localTask);
+    setLocalTask(initialTask());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [task]);
 
-  const update = async () => {
-    const _newTask:ITask = {
-      ...emptyTask,
-      assigned_to_id: user?.user_id ?? '',
-      project_id: project?.id ?? '' 
-    }
-    console.log('update', task, newTask, localTask);
-    // console.log('update', _newTask, newTask);
-    
-    if (task?.id) {
-      // обновление существующей
-      await useUpdateTask(task.id, localTask);
-    } else {
-      // создание новой
-      await useCreateTask(localTask);
+  const save = async () => {
+    if (!localTask.title.trim()) {
+      toaster.create({ title: 'Введите название задачи', type: 'error', duration: 3000 });
+      return;
     }
 
-    onClose();
+    try {
+      if (task?.id) {
+        await updateTask(task.id, localTask);
+      } else {
+        await createTask(localTask);
+      }
+
+      onClose?.();
+    } catch (error) {
+      toaster.create({
+        description: error instanceof Error ? error.message : 'Неизвестная ошибка',
+        title: 'Ошибка сохранения задачи',
+        type: 'error',
+        duration: 5000,
+      });
+    }
   };
 
   return (
@@ -109,7 +116,7 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
                 <Textarea
                   variant="flushed"
                   placeholder="Описание"
-                  value={localTask.description}
+                  value={localTask.description ?? ''}
                   onChange={(e) =>
                     setLocalTask((prev) => ({
                       ...prev,
@@ -122,11 +129,11 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
                 </Text>
                 <NumberInput.Root
                   width="200px"
-                  value={localTask.priority}
+                  value={String(localTask.priority)}
                   onValueChange={(e) =>
                     setLocalTask((prev) => ({
                       ...prev,
-                      priority: Number(e.value),
+                      priority: Number(e.value) || 0,
                     }))
                   }
                 >
@@ -135,7 +142,7 @@ export default function DetailsTask({ task, onClose }: DetailsTaskPorps) {
                 </NumberInput.Root>
               </div>
 
-              <Button onClick={update}>
+              <Button onClick={save}>
                 {task?.id ? 'Сохранить' : 'Создать'}
               </Button>
             </Dialog.Body>

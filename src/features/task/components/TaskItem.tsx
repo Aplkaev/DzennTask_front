@@ -1,27 +1,17 @@
 import { Box, HStack, Stack, Checkbox, Text, Button } from '@chakra-ui/react';
-import {
-  useRemoveTask,
-  useDoneTask,
-  useUpdateTask,
-} from '../useTaskStore';
 import DetailsTask from './DetailsTask';
 import { useState } from 'react';
+import { TaskStatusEnum } from '@/generated/graphql';
 import type { ITask } from '../types';
 
 interface TaskItemProps {
   task: ITask;
   doneTask: (task: ITask) => void;
+  removeTask: (task: ITask) => void;
 }
 
-const TaskItem = ({ task, doneTask }: TaskItemProps) => {
-  const pathDatailsTask = '/project/tasks/' + task.id;
+const TaskItem = ({ task, doneTask, removeTask }: TaskItemProps) => {
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-  const updateTask = async () => {
-    if (!task.id) {
-      return;
-    }
-    doneTask(task);
-  };
 
   const setDetails = () => {
     setIsOpenDetails((prev) => !prev);
@@ -31,13 +21,9 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
     <Box>
       <HStack key={task.id}>
         <Stack align="flex-start">
-          <Checkbox.Root
-            checked={task.status === 'DONE'}
-          >
+          <Checkbox.Root checked={task.status === TaskStatusEnum.Done}>
             <Checkbox.HiddenInput />
-            <Checkbox.Control
-              onClick={updateTask}
-            >
+            <Checkbox.Control onClick={() => doneTask(task)}>
               <Checkbox.Indicator />
             </Checkbox.Control>
             <Checkbox.Label>{task.title}</Checkbox.Label>
@@ -53,7 +39,7 @@ const TaskItem = ({ task, doneTask }: TaskItemProps) => {
             size="sm"
             variant="surface"
             colorPalette={'red'}
-            onClick={() => useRemoveTask(task.id)}
+            onClick={() => removeTask(task)}
           >
             Удалить
           </Button>

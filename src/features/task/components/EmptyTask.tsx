@@ -1,7 +1,6 @@
 // import { VStack, Text } from '@chakra-ui/react';
 import { Button, ButtonGroup, EmptyState, VStack } from "@chakra-ui/react"
 import { HiColorSwatch } from "react-icons/hi"
-import DetailsTask from "./DetailsTask"
 
 interface EmptyTaskProps {
   title: string,

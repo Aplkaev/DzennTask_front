@@ -1,0 +1,40 @@
+fragment UserFields on User {
+  id
+  email
+  avatar_url
+  telegram
+  phone
+  timezone
+}
+
+mutation LoginUser($input: loginUserInput!) {
+  loginUser(input: $input) {
+    user {
+      ...UserFields
+      token
+    }
+  }
+}
+
+mutation RegisterUser($input: registerUserInput!) {
+  registerUser(input: $input) {
+    user {
+      ...UserFields
+      token
+    }
+  }
+}
+
+query Me {
+  meUser {
+    ...UserFields
+  }
+}
+
+mutation UpdateUser($input: updateUserInput!) {
+  updateUser(input: $input) {
+    user {
+      ...UserFields
+    }
+  }
+}

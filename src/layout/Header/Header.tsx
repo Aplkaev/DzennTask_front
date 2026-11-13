@@ -17,8 +17,10 @@ export default function Header() {
       bg="bg.panel"
     >
       <HStack gap={4}>
-        <Link as={RouterLink} to="/" fontWeight="bold">
-          <Text>DzennTask</Text>
+        <Link asChild fontWeight="bold">
+          <RouterLink to="/">
+            <Text>DzennTask</Text>
+          </RouterLink>
         </Link>
         <ProjectSwitcher />
       </HStack>

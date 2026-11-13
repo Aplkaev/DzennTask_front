@@ -111,7 +111,7 @@ const useProjectStore = create<IProjectState>()(
 );
 
 export const useProjects = () => useProjectStore((state) => state.projects);
-export const useProject = (): IProject => {
+export const useProject = (): IProject | null => {
   const project = useProjectStore((state) => state.selectProject);
   return project;
 };

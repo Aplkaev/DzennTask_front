@@ -1,26 +1,21 @@
-import { Box, HStack, Input, Button, Heading } from '@chakra-ui/react';
-import { useCreateTask } from '../useTaskStore';
+import { Box, HStack, Input, Button } from '@chakra-ui/react';
 import { useUser } from '@/features/auth/useAuthStore';
 import { useProject } from '@/features/project/useProjectStore';
 import { useState } from 'react';
-import DetailsTask from './DetailsTask';
-import type { IUser } from '@/features/auth/types';
-import type { IProject } from '@/features/project/types';
 
 interface CreateTaskProps {
-  addTask: (newTaskTitle: string, user:IUser, project: IProject) => void
+  addTask: (newTaskTitle: string) => void;
 }
 
-const CreateTask = ({addTask}:CreateTaskProps) => {
+const CreateTask = ({ addTask }: CreateTaskProps) => {
   const [newTaskTitle, setNewTask] = useState('');
   const project = useProject();
   const user = useUser();
 
-
   const handleAddTask = () => {
-    if (!user || !project) return;
+    if (!user || !project || !newTaskTitle.trim()) return;
 
-    addTask(newTaskTitle, user, project);
+    addTask(newTaskTitle);
     setNewTask('');
   };
 
@@ -37,12 +32,10 @@ const CreateTask = ({addTask}:CreateTaskProps) => {
           Добавить
         </Button>
       </HStack>
-      {/* {isOpenDetails && 
-        newTask && (
-        <DetailsTask task={newTask} onClose={() => setDetails()} />
-      )} */}
     </Box>
-  ) : '';
+  ) : (
+    ''
+  );
 };
 
 export default CreateTask;

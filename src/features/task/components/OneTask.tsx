@@ -1,38 +1,16 @@
-import { useEffect } from 'react';
 import { Button, CloseButton, Dialog, Portal, Box } from '@chakra-ui/react';
 import type { ITask } from '../types';
-import { useDoneTask, useToggleOneTaskView, fetchFocusTask } from '../useTaskStore';
-import { useProject } from '../../project/useProjectStore';
-import { toaster } from '@/components/ui/toaster';
+import { toggleOneTaskView } from '../useTaskStore';
 
-interface DetailsTaskPorps {
-  task?: ITask;
-  doneTask: (task: ITask) => void;
+interface OneTaskProps {
+  task: ITask;
+  doneTask: (task: ITask) => Promise<void>;
 }
 
-export default function OneTask({
-  task = {
-    id: null,
-    title: null,
-    status: null,
-    priority: null,
-    project_id: null,
-    assigned_to_id: null,
-    description: null,
-  },
-  doneTask,
-}: DetailsTaskPorps) {
-  const projectId = useProject().id;
-  const toggleOneTaskView = useToggleOneTaskView();
-  const fetchFocusTasks = () => {
-    console.log('fetchFocusTasks');
-    
-    fetchFocusTask(projectId)
-  };
-
+export default function OneTask({ task, doneTask }: OneTaskProps) {
   const clickDoneTask = async () => {
+    // doneTask сам подтягивает следующую основную задачу
     await doneTask(task);
-    await fetchFocusTasks();
     toggleOneTaskView();
   };
 
@@ -46,18 +24,11 @@ export default function OneTask({
               <Dialog.Title></Dialog.Title>
             </Dialog.Header>
             <Dialog.Body>
-              <Box
-                maxW="800px" 
-                w="90%"
-                mx="auto" 
-                py={4} 
-              >
+              <Box maxW="800px" w="90%" mx="auto" py={4}>
                 <Box mb={4} fontWeight="bold" fontSize="xl">
                   {task.title}
                 </Box>
-                <Box fontSize="md">
-                  {task.description}
-                </Box>
+                <Box fontSize="md">{task.description}</Box>
               </Box>
             </Dialog.Body>
             <Dialog.Footer>

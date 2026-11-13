@@ -13,15 +13,15 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Iterable: { input: any; output: any; }
 };
 
-export enum AllEntityTypeEnum {
-  Comment = 'COMMENT',
-  Post = 'POST',
-  User = 'USER'
-}
+export const AllEntityTypeEnum = {
+  Comment: 'COMMENT',
+  Post: 'POST',
+  User: 'USER'
+} as const;
 
+export type AllEntityTypeEnum = typeof AllEntityTypeEnum[keyof typeof AllEntityTypeEnum];
 export type Comment = Node & {
   __typename?: 'Comment';
   author: User;
@@ -115,8 +115,6 @@ export type Mutation = {
   createComment?: Maybe<CreateCommentPayload>;
   /** Creates a KanbanColumn. */
   createKanbanColumn?: Maybe<CreateKanbanColumnPayload>;
-  /** Creates a Notification. */
-  createNotification?: Maybe<CreateNotificationPayload>;
   /** Creates a Project. */
   createProject?: Maybe<CreateProjectPayload>;
   /** Creates a ProjectUser. */
@@ -135,6 +133,10 @@ export type Mutation = {
   deleteProjectUser?: Maybe<DeleteProjectUserPayload>;
   /** Deletes a Task. */
   deleteTask?: Maybe<DeleteTaskPayload>;
+  /** Logins a User. */
+  loginUser?: Maybe<LoginUserPayload>;
+  /** Registers a User. */
+  registerUser?: Maybe<RegisterUserPayload>;
   /** Updates a Comment. */
   updateComment?: Maybe<UpdateCommentPayload>;
   /** Updates a KanbanColumn. */
@@ -147,6 +149,8 @@ export type Mutation = {
   updateProjectUser?: Maybe<UpdateProjectUserPayload>;
   /** Updates a Task. */
   updateTask?: Maybe<UpdateTaskPayload>;
+  /** Updates a User. */
+  updateUser?: Maybe<UpdateUserPayload>;
 };
 
 
@@ -157,11 +161,6 @@ export type MutationCreateCommentArgs = {
 
 export type MutationCreateKanbanColumnArgs = {
   input: CreateKanbanColumnInput;
-};
-
-
-export type MutationCreateNotificationArgs = {
-  input: CreateNotificationInput;
 };
 
 
@@ -210,6 +209,16 @@ export type MutationDeleteTaskArgs = {
 };
 
 
+export type MutationLoginUserArgs = {
+  input: LoginUserInput;
+};
+
+
+export type MutationRegisterUserArgs = {
+  input: RegisterUserInput;
+};
+
+
 export type MutationUpdateCommentArgs = {
   input: UpdateCommentInput;
 };
@@ -239,6 +248,11 @@ export type MutationUpdateTaskArgs = {
   input: UpdateTaskInput;
 };
 
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
+};
+
 /** A node, according to the Relay specification. */
 export type Node = {
   /** The id of this node. */
@@ -248,7 +262,7 @@ export type Node = {
 export type Notification = Node & {
   __typename?: 'Notification';
   id: Scalars['ID']['output'];
-  read?: Maybe<Scalars['Boolean']['output']>;
+  is_read: Scalars['Boolean']['output'];
   string_id: Scalars['String']['output'];
   text: Scalars['String']['output'];
   type: Scalars['String']['output'];
@@ -479,15 +493,15 @@ export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
-export enum RoleEnum {
-  RoleMember = 'ROLE_MEMBER',
-  RoleOwner = 'ROLE_OWNER'
-}
+export const RoleEnum = {
+  RoleMember: 'ROLE_MEMBER',
+  RoleOwner: 'ROLE_OWNER'
+} as const;
 
+export type RoleEnum = typeof RoleEnum[keyof typeof RoleEnum];
 export type Task = Node & {
   __typename?: 'Task';
   assigned_to?: Maybe<User>;
-  comments?: Maybe<CommentCursorConnection>;
   deadline?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -499,14 +513,6 @@ export type Task = Node & {
   story_points?: Maybe<Scalars['Int']['output']>;
   string_id: Scalars['String']['output'];
   title: Scalars['String']['output'];
-};
-
-
-export type TaskCommentsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Cursor connection for Task. */
@@ -538,55 +544,27 @@ export type TaskPageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-export enum TaskStatusEnum {
-  Done = 'DONE',
-  New = 'NEW'
-}
+export const TaskStatusEnum = {
+  Done: 'DONE',
+  New: 'NEW'
+} as const;
 
+export type TaskStatusEnum = typeof TaskStatusEnum[keyof typeof TaskStatusEnum];
 export type User = Node & {
   __typename?: 'User';
   avatar_url?: Maybe<Scalars['String']['output']>;
-  content?: Maybe<CommentCursorConnection>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  notifications?: Maybe<NotificationCursorConnection>;
-  password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
-  project_users?: Maybe<ProjectUserCursorConnection>;
-  roles: Scalars['Iterable']['output'];
   string_id: Scalars['String']['output'];
   telegram?: Maybe<Scalars['String']['output']>;
   timezone?: Maybe<Scalars['String']['output']>;
-  user_identifier: Scalars['String']['output'];
-};
-
-
-export type UserContentArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type UserNotificationsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type UserProject_UsersArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
+  /** JWT — заполняется только в ответе loginUser/registerUser, в БД не хранится. */
+  token?: Maybe<Scalars['String']['output']>;
 };
 
 /** Creates a Comment. */
 export type CreateCommentInput = {
-  author: Scalars['String']['input'];
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   entity_id: Scalars['String']['input'];
   entity_type: AllEntityTypeEnum;
@@ -608,7 +586,6 @@ export type CreateKanbanColumnInput = {
   name: Scalars['String']['input'];
   position: Scalars['Int']['input'];
   project: Scalars['String']['input'];
-  tasks?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 /** Creates a KanbanColumn. */
@@ -618,29 +595,11 @@ export type CreateKanbanColumnPayload = {
   kanbanColumn?: Maybe<KanbanColumn>;
 };
 
-/** Creates a Notification. */
-export type CreateNotificationInput = {
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  is_read: Scalars['Boolean']['input'];
-  text: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  user: Scalars['String']['input'];
-};
-
-/** Creates a Notification. */
-export type CreateNotificationPayload = {
-  __typename?: 'createNotificationPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  notification?: Maybe<Notification>;
-};
-
 /** Creates a Project. */
 export type CreateProjectInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  kanban_columns?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   name: Scalars['String']['input'];
-  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   tag?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -670,7 +629,6 @@ export type CreateProjectUserPayload = {
 export type CreateTaskInput = {
   assigned_to?: InputMaybe<Scalars['String']['input']>;
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  comments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   deadline?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   kanban_column?: InputMaybe<Scalars['String']['input']>;
@@ -767,9 +725,38 @@ export type DeleteTaskPayload = {
   task?: Maybe<Task>;
 };
 
+/** Logins a User. */
+export type LoginUserInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  /** Пароль в открытом виде — только вход для loginUser/registerUser, в БД не хранится. */
+  plain_password?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Logins a User. */
+export type LoginUserPayload = {
+  __typename?: 'loginUserPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  user?: Maybe<User>;
+};
+
+/** Registers a User. */
+export type RegisterUserInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  /** Пароль в открытом виде — только вход для loginUser/registerUser, в БД не хранится. */
+  plain_password?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Registers a User. */
+export type RegisterUserPayload = {
+  __typename?: 'registerUserPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  user?: Maybe<User>;
+};
+
 /** Updates a Comment. */
 export type UpdateCommentInput = {
-  author?: InputMaybe<Scalars['String']['input']>;
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   entity_id?: InputMaybe<Scalars['String']['input']>;
   entity_type?: InputMaybe<AllEntityTypeEnum>;
@@ -793,7 +780,6 @@ export type UpdateKanbanColumnInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Int']['input']>;
   project?: InputMaybe<Scalars['String']['input']>;
-  tasks?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 /** Updates a KanbanColumn. */
@@ -808,9 +794,6 @@ export type UpdateNotificationInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   is_read?: InputMaybe<Scalars['Boolean']['input']>;
-  text?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
-  user?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Updates a Notification. */
@@ -825,9 +808,7 @@ export type UpdateProjectInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  kanban_columns?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   name?: InputMaybe<Scalars['String']['input']>;
-  project_users?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   tag?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -858,7 +839,6 @@ export type UpdateProjectUserPayload = {
 export type UpdateTaskInput = {
   assigned_to?: InputMaybe<Scalars['String']['input']>;
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  comments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   deadline?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -878,13 +858,65 @@ export type UpdateTaskPayload = {
   task?: Maybe<Task>;
 };
 
+/** Updates a User. */
+export type UpdateUserInput = {
+  avatar_url?: InputMaybe<Scalars['String']['input']>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  phone?: InputMaybe<Scalars['String']['input']>;
+  telegram?: InputMaybe<Scalars['String']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
 
+/** Updates a User. */
+export type UpdateUserPayload = {
+  __typename?: 'updateUserPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  user?: Maybe<User>;
+};
+
+export const UserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar_url"}},{"kind":"Field","name":{"kind":"Name","value":"telegram"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]} as unknown as DocumentNode<UserFieldsFragment, unknown>;
+export const TaskFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TaskFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Task"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assigned_to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<TaskFieldsFragment, unknown>;
+export const LoginUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"loginUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar_url"}},{"kind":"Field","name":{"kind":"Name","value":"telegram"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]} as unknown as DocumentNode<LoginUserMutation, LoginUserMutationVariables>;
+export const RegisterUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"registerUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar_url"}},{"kind":"Field","name":{"kind":"Name","value":"telegram"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]} as unknown as DocumentNode<RegisterUserMutation, RegisterUserMutationVariables>;
+export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar_url"}},{"kind":"Field","name":{"kind":"Name","value":"telegram"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
+export const UpdateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar_url"}},{"kind":"Field","name":{"kind":"Name","value":"telegram"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;
 export const ProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProjectsQuery, ProjectsQueryVariables>;
 export const CreateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<CreateProjectMutation, CreateProjectMutationVariables>;
 export const UpdateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateProjectMutation, UpdateProjectMutationVariables>;
 export const DeleteProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"deleteProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteProjectMutation, DeleteProjectMutationVariables>;
-export const CreateTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"task"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"assigned_to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
-export const TasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Tasks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"project"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status_list"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"order"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TaskFilter_order"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"project"},"value":{"kind":"Variable","name":{"kind":"Name","value":"project"}}},{"kind":"Argument","name":{"kind":"Name","value":"status"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}},{"kind":"Argument","name":{"kind":"Name","value":"status_list"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status_list"}}},{"kind":"Argument","name":{"kind":"Name","value":"order"},"value":{"kind":"Variable","name":{"kind":"Name","value":"order"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TasksQuery, TasksQueryVariables>;
+export const TasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Tasks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"project"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status_list"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"order"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TaskFilter_order"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"project"},"value":{"kind":"Variable","name":{"kind":"Name","value":"project"}}},{"kind":"Argument","name":{"kind":"Name","value":"status_list"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status_list"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"order"},"value":{"kind":"Variable","name":{"kind":"Name","value":"order"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TaskFields"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TaskFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Task"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assigned_to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<TasksQuery, TasksQueryVariables>;
+export const CreateTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"task"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TaskFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TaskFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Task"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assigned_to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
+export const UpdateTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"task"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TaskFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TaskFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Task"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"project"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assigned_to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<UpdateTaskMutation, UpdateTaskMutationVariables>;
+export const DeleteTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"deleteTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"task"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteTaskMutation, DeleteTaskMutationVariables>;
+export type UserFieldsFragment = { __typename?: 'User', id: string, email: string, avatar_url?: string | null, telegram?: string | null, phone?: string | null, timezone?: string | null };
+
+export type LoginUserMutationVariables = Exact<{
+  input: LoginUserInput;
+}>;
+
+
+export type LoginUserMutation = { __typename?: 'Mutation', loginUser?: { __typename?: 'loginUserPayload', user?: { __typename?: 'User', token?: string | null, id: string, email: string, avatar_url?: string | null, telegram?: string | null, phone?: string | null, timezone?: string | null } | null } | null };
+
+export type RegisterUserMutationVariables = Exact<{
+  input: RegisterUserInput;
+}>;
+
+
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser?: { __typename?: 'registerUserPayload', user?: { __typename?: 'User', token?: string | null, id: string, email: string, avatar_url?: string | null, telegram?: string | null, phone?: string | null, timezone?: string | null } | null } | null };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', meUser?: { __typename?: 'User', id: string, email: string, avatar_url?: string | null, telegram?: string | null, phone?: string | null, timezone?: string | null } | null };
+
+export type UpdateUserMutationVariables = Exact<{
+  input: UpdateUserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'updateUserPayload', user?: { __typename?: 'User', id: string, email: string, avatar_url?: string | null, telegram?: string | null, phone?: string | null, timezone?: string | null } | null } | null };
+
 export type ProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -911,20 +943,36 @@ export type DeleteProjectMutationVariables = Exact<{
 
 export type DeleteProjectMutation = { __typename?: 'Mutation', deleteProject?: { __typename?: 'deleteProjectPayload', project?: { __typename?: 'Project', id: string } | null } | null };
 
-export type CreateTaskMutationVariables = Exact<{
-  input: CreateTaskInput;
-}>;
-
-
-export type CreateTaskMutation = { __typename?: 'Mutation', createTask?: { __typename?: 'createTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatusEnum, description?: string | null, assigned_to?: { __typename?: 'User', id: string, email: string } | null, project?: { __typename?: 'Project', id: string, name: string } | null } | null } | null };
+export type TaskFieldsFragment = { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null, assigned_to?: { __typename?: 'User', id: string, email: string } | null };
 
 export type TasksQueryVariables = Exact<{
   project: Scalars['String']['input'];
-  status?: InputMaybe<Scalars['String']['input']>;
   status_list?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+  title?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Array<InputMaybe<TaskFilter_Order>> | InputMaybe<TaskFilter_Order>>;
   first?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type TasksQuery = { __typename?: 'Query', tasks?: { __typename?: 'TaskCursorConnection', edges?: Array<{ __typename?: 'TaskEdge', node?: { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null } | null } | null> | null } | null };
+export type TasksQuery = { __typename?: 'Query', tasks?: { __typename?: 'TaskCursorConnection', edges?: Array<{ __typename?: 'TaskEdge', node?: { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null, assigned_to?: { __typename?: 'User', id: string, email: string } | null } | null } | null> | null } | null };
+
+export type CreateTaskMutationVariables = Exact<{
+  input: CreateTaskInput;
+}>;
+
+
+export type CreateTaskMutation = { __typename?: 'Mutation', createTask?: { __typename?: 'createTaskPayload', task?: { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null, assigned_to?: { __typename?: 'User', id: string, email: string } | null } | null } | null };
+
+export type UpdateTaskMutationVariables = Exact<{
+  input: UpdateTaskInput;
+}>;
+
+
+export type UpdateTaskMutation = { __typename?: 'Mutation', updateTask?: { __typename?: 'updateTaskPayload', task?: { __typename?: 'Task', id: string, title: string, description?: string | null, status: TaskStatusEnum, priority: number, project?: { __typename?: 'Project', id: string } | null, assigned_to?: { __typename?: 'User', id: string, email: string } | null } | null } | null };
+
+export type DeleteTaskMutationVariables = Exact<{
+  input: DeleteTaskInput;
+}>;
+
+
+export type DeleteTaskMutation = { __typename?: 'Mutation', deleteTask?: { __typename?: 'deleteTaskPayload', task?: { __typename?: 'Task', id: string } | null } | null };

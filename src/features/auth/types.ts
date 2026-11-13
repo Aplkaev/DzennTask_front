@@ -13,12 +13,11 @@ interface ILoginInput {
 }
 
 interface IAction {
-  login: (user: ILoginInput) => void;
+  login: (user: ILoginInput) => Promise<void>;
   logout: () => void;
-  register: (user: ILoginInput) => void;
-  getMe: () => void;
-  getUsers: () => void;
-  requestUser: (user: IUser) => void;
+  register: (user: ILoginInput) => Promise<void>;
+  getMe: () => Promise<void>;
+  updateUser: (user: IUser) => Promise<void>;
 }
 
 interface IAuth {

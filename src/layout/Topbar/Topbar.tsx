@@ -1,10 +1,11 @@
-import { Box, Button, Input, Checkbox, HStack } from '@chakra-ui/react';
-import { useToggleOneTaskView } from '@/features/task/useTaskStore';
+import { Box, Button, Input, HStack } from '@chakra-ui/react';
+import { toggleOneTaskView } from '@/features/task/useTaskStore';
+import type { TaskStatusFilter } from '@/features/task/types';
 
 interface TopbarProps {
   onSearch: (text: string) => void;
   onSubmitSearch: () => void;
-  statusFilter: string;
+  statusFilter: TaskStatusFilter;
   filterStatusTask: () => void;
 }
 
@@ -14,8 +15,6 @@ export default function Topbar({
   statusFilter,
   filterStatusTask,
 }: TopbarProps) {
-  const toggleOneTaskView = useToggleOneTaskView();
-
   return (
     <Box p={4}>
       <Input
@@ -28,19 +27,13 @@ export default function Topbar({
         }}
       />
       <HStack align="flex-start" p={4} justify="space-between">
-        {/* <Checkbox.Root checked={statusFilter !== 'new'}>
-          <Checkbox.HiddenInput />
-          <Checkbox.Control onClick={filterStatusTask}>
-            <Checkbox.Indicator />
-          </Checkbox.Control>
-          <Checkbox.Label>
-            {statusFilter === 'new'
-              ? 'Только новые'
-              : statusFilter === 'done'
-                ? 'Только выполненные'
-                : 'Все задачи'}
-          </Checkbox.Label>
-        </Checkbox.Root> */}
+        <Button size="sm" variant="outline" onClick={filterStatusTask}>
+          {statusFilter === 'new'
+            ? 'Только новые'
+            : statusFilter === 'done'
+              ? 'Только выполненные'
+              : 'Все задачи'}
+        </Button>
 
         <Button size="sm" onClick={toggleOneTaskView}>
           Основная задача
